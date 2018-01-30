@@ -1,29 +1,4 @@
-/*ZohoHCAsap("Events",{
-
-		Onload :  function(){
-			
-			//ZohoHCAsap.Hide();
-			ZohoHCAsap.Properties( { keepithide : true });
-		}
-	
-	})*/
 window.addEventListener("message", function(event) {
-    // if (event.data.name == "Zohodesk_Chrome_Extension_AsapCheck") {
-    //     if (typeof(ZohoHCAsap) != "undefined") {
-    //         function zAsapObjGetter() {
-    //             var orgId = ZohoHCAsap._defaultoptions.myAppPortalId;
-    //             var AsapId = ZohoHCAsap._defaultoptions.id;
-    //             var AsapName = ZohoHCAsap._defaultoptions.name;
-    //             window.postMessage({
-    //                 name: "Zohodesk_Chrome_Extension_AsapDetails",
-    //                 orgId: orgId,
-    //                 AsapId: AsapId,
-    //                 AsapName: AsapName
-    //             }, "*")
-    //         };
-    //         zAsapObjGetter();
-    //     }
-    // } 
     if (event.data.name == "UrlCheck") {
         if (typeof(ZohoHCAsap) != "undefined") {
             function zAsapObjGetter() {
