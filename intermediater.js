@@ -79,6 +79,7 @@ window.addEventListener("message", function(event) {
         ZohoHCAsap.ContextualHelper.RegisterTips(ZohoHCAsap.ContextualHelper.tips(window.location.pathname))
     }
     else if(event.data.name = "elemSelected"){
-        updater.updateInnerText({id:"pathShown",value:event.data.value});
+        console.log("owiowinefoin");
+        // updater.updateInnerText({id:"pathShown",value:event.data.value});
     }
 }, false);

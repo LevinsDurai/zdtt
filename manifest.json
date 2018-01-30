@@ -28,6 +28,6 @@
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
         "css": ["Tooltip1.css"],
-        "js": ["content.js"]
+        "js": ["content.js","PageLoad.js"]
     }]
 }

@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(
             }
         }
         else if(request.zdttMsg == "injectSidePanel"){
-            filesInjecter("injectSidePanel");
+            filesInjecter("injectSidePanel",sender);
             resp.zdttMsg = "bindEvent"
 
         }
@@ -64,7 +64,7 @@ var zd_CONFIG = {
     }
 };
 
-function filesInjecter(fn){
+function filesInjecter(fn,sender){
     switch (fn) {
         case "injectSidePanel":
             chrome.tabs.query({

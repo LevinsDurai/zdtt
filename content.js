@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 })
 
 
-function binder(){
+function eventBinder(){
     document.addEventListener("click",callback,true)
 }
 function callback(event){
