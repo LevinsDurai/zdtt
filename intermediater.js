@@ -1,7 +1,7 @@
+// checking ...
 function sample(){
-    console.log("3333")
+    console.log("33333")   
 }
-
 window.addEventListener("message", function(event) {
     if (event.data.name == "UrlCheck") {
         if (typeof(ZohoHCAsap) != "undefined") {
