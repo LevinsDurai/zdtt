@@ -19,10 +19,10 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+        var resp = {
+            "zdttMsg": "invalidate query"
+        }
         if (request.zdttMsg == "zd_ATTitsEnabledStatus") {
-            var resp = {
-                "zdttMsg": "invalidate query"
-            }
             if (request.data == true) {
                 resp.zdttMsg = "deactiveTooltip";
             } else if (request.data == false) {
@@ -39,6 +39,11 @@ chrome.runtime.onMessage.addListener(
                     path: zd_CONFIG.icon.inactive
                 });
             }
+        }
+        else if(request.zdttMsg == "injectSidePanel"){
+            filesInjecter("injectSidePanel");
+            resp.zdttMsg = "bindEvent"
+
         }
 
         sendResponse(resp);
@@ -58,3 +63,18 @@ var zd_CONFIG = {
         }
     }
 };
+
+function filesInjecter(fn){
+    switch (fn) {
+        case "injectSidePanel":
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, 
+            function(tabs) {
+                chrome.tabs.executeScript(sender.tab.id, {
+                    file: "zdttPanel.js"
+                });
+            });
+    }
+}

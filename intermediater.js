@@ -1,8 +1,3 @@
-// checking ...
-function sample(){
-    console.log("33333")   
-}
-
 window.addEventListener("message", function(event) {
     if (event.data.name == "UrlCheck") {
         if (typeof(ZohoHCAsap) != "undefined") {
@@ -82,5 +77,8 @@ window.addEventListener("message", function(event) {
         var zdAsapTool = document.getElementById("zohohc-asap-viewers");
         zdAsapTool.className = zdAsapTool.className.split(" tempAsapStyle-from-tooltipAddon").join("");
         ZohoHCAsap.ContextualHelper.RegisterTips(ZohoHCAsap.ContextualHelper.tips(window.location.pathname))
+    }
+    else if(event.data.name = "elemSelected"){
+        updater.updateInnerText({id:"pathShown",value:event.data.value});
     }
 }, false);
