@@ -91,5 +91,5 @@ function updatePathObj(id) {
 };
 updatePathObj.prototype.updateInnerText = function(data) {
     debugger;
-    this.elem.querySelector(data.id).innerText = data.value;
+    this.elem.shadowRoot.querySelector(data.id).innerText = data.value;
 };
