@@ -5,19 +5,6 @@ document.getElementsByTagName('html')[0].appendChild(parent);
 
 
 var innerHTML = `
-	<script>
-		debugger;
-		function updatePathObj(id){
-			this.elem = document.getElementById(id);
-		};
-		updatePathObj.prototype.updateInnerText = function(data){
-			debugger;
-			this.elem.querySelector(data.id).innerText = data.value;
-		};
-		var updater = new updatePathObj("sampleShadow");
-		console.log("rendered");
-
-	</script>
 	<div>
 		<b id="pathShown"></b>
 	</div>

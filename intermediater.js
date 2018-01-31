@@ -79,7 +79,15 @@ window.addEventListener("message", function(event) {
         ZohoHCAsap.ContextualHelper.RegisterTips(ZohoHCAsap.ContextualHelper.tips(window.location.pathname))
     }
     else if(event.data.name = "elemSelected"){
-        console.log("owiowinefoin");
-        // updater.updateInnerText({id:"pathShown",value:event.data.value});
+        updater.updateInnerText({id:"pathShown",value:event.data.value});
     }
 }, false);
+
+function updatePathObj(id) {
+    this.elem = document.getElementById(id);
+};
+updatePathObj.prototype.updateInnerText = function(data) {
+    debugger;
+    this.elem.querySelector(data.id).innerText = data.value;
+};
+var updater = new updatePathObj("sampleShadow");
