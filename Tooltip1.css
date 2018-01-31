@@ -2323,3 +2323,18 @@ ul.zohodesk-Tooltip-list li{
     right: 0;
     width: 390px;
 }
+
+
+/*testing css*/
+
+#sampleShadow{
+    position: fixed;
+    box-shadow: -3px 3px 14px 0px #00000073;
+    top: 59px;
+    left: 59px;
+    z-index: 1;
+    background: #656464;
+    padding: 25px;
+    color: #fff;
+    text-shadow: -2px 2px 3px black;
+}

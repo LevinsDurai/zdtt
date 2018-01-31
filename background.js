@@ -40,13 +40,33 @@ chrome.runtime.onMessage.addListener(
                 });
             }
         }
+        
+        else if (request.message == "getCookie") {
+            var unique = {};
+            var cook;
+            var zd_tt_agentTicket    = getCookie({url: 'https://*.zoho.com',name: 'IAMAGENTTICKET'});
+            var zz_tt_csrf           = getCookie({url: 'https://' + commomDomainNameForAPI,name: 'crmcsr'});
+
+            Promise.all([zd_tt_agentTicket, zz_tt_csrf]).then(function(a) {
+                unique.agent = a[0];
+                unique.csrf = a[1];
+                sendResponse({ "zdttMsg": "cookieGet" , "cookieValue": JSON.stringify(unique) })
+            });
+        }
+
+
+        /* sample code ... */ 
         else if(request.zdttMsg == "injectSidePanel"){
             filesInjecter("injectSidePanel",sender);
             resp.zdttMsg = "bindEvent"
 
         }
+        /* sample code ... */ 
 
-        sendResponse(resp);
+
+        if(request.zdttMsg != "getCookie"){
+            sendResponse && sendResponse(resp);
+        }
     }
 )
 
@@ -77,4 +97,18 @@ function filesInjecter(fn,sender){
                 });
             });
     }
+}
+
+function getCookie(obj) {
+    return new Promise(function(resolve, reject){
+        chrome.cookies.get(
+            obj,
+            function(cookie) {
+                if (cookie) {
+                    resolve(cookie.value);
+                }
+                resolve('cookieNotFound');
+            }
+        );
+    })
 }

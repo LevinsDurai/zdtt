@@ -90,6 +90,5 @@ function updatePathObj(id) {
     this.elem = document.getElementById(id);
 };
 updatePathObj.prototype.updateInnerText = function(data) {
-    debugger;
     this.elem.shadowRoot.querySelector("#"+data.id).innerText = data.value;
 };
