@@ -17,3 +17,6 @@ document.getElementsByTagName('html')[0].appendChild(temp);
 
 var shadowRoot = parent.createShadowRoot();
 shadowRoot.appendChild(document.querySelector("#zdttTemp").content);
+window.postMessage({
+    name: "createObj"
+}, "*")

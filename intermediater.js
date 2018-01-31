@@ -78,7 +78,10 @@ window.addEventListener("message", function(event) {
         zdAsapTool.className = zdAsapTool.className.split(" tempAsapStyle-from-tooltipAddon").join("");
         ZohoHCAsap.ContextualHelper.RegisterTips(ZohoHCAsap.ContextualHelper.tips(window.location.pathname))
     }
-    else if(event.data.name = "elemSelected"){
+    else if(event.data.name == "createObj"){
+        updater = new updatePathObj("sampleShadow");
+    }
+    else if(event.data.name == "elemSelected"){
         updater.updateInnerText({id:"pathShown",value:event.data.value});
     }
 }, false);
@@ -90,4 +93,3 @@ updatePathObj.prototype.updateInnerText = function(data) {
     debugger;
     this.elem.querySelector(data.id).innerText = data.value;
 };
-var updater = new updatePathObj("sampleShadow");
