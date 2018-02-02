@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(
             }
         }
         
-        else if (request.message == "getCookie") {
+        else if (request.zdttMsg == "getCookie") {
             var unique = {};
             var cook;
             var zd_tt_agentTicket    = getCookie({url: 'https://*.zoho.com',name: 'IAMAGENTTICKET'});
@@ -50,7 +50,15 @@ chrome.runtime.onMessage.addListener(
             Promise.all([zd_tt_agentTicket, zz_tt_csrf]).then(function(a) {
                 unique.agent = a[0];
                 unique.csrf = a[1];
-                sendResponse({ "zdttMsg": "cookieGet" , "cookieValue": JSON.stringify(unique) })
+                resp.zdttMsg = "cookieGet";
+                resp.cookieValue = JSON.stringify(unique);
+
+                chrome.tabs.query({
+                    active: true,
+                    currentWindow: true
+                }, function(tabs) {
+                    chrome.tabs.sendMessage(sender.tab.id, resp);
+                });
             });
         }
 
@@ -62,7 +70,6 @@ chrome.runtime.onMessage.addListener(
 
         }
         /* sample code ... */ 
-
 
         if(request.zdttMsg != "getCookie"){
             sendResponse && sendResponse(resp);

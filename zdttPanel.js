@@ -1,22 +1,26 @@
-var parent = document.createElement("div");
-parent.id = "sampleShadow";
-parent.class = "parent" ;
-document.getElementsByTagName('html')[0].appendChild(parent);
+/* sample code */ 
+	var sampleParent = domElement.create({
+	    elemName: "div",
+	    attributes: {
+	        id: "sampleShadow",
+	        class: "parent"
+	    }
+	})
+	document.getElementsByTagName('html')[0].appendChild(sampleParent);
 
+	var sampleTemplete = domElement.create({
+	    elemName: "template",
+	    attributes: {
+	        id: "zdttTemp"
+	    },
+	    elementData: {
+	        innerHTML: `<div><b id="pathShown"></b></div>`
+	    }
+	})
+	document.getElementsByTagName('html')[0].appendChild(sampleTemplete);
 
-var innerHTML = `
-	<div>
-		<b id="pathShown"></b>
-	</div>
-`
-var temp = document.createElement("template");
-temp.id = "zdttTemp";
-temp.innerHTML = innerHTML;
-document.getElementsByTagName('html')[0].appendChild(temp);
-
-
-var shadowRoot = parent.createShadowRoot();
-shadowRoot.appendChild(document.querySelector("#zdttTemp").content);
-window.postMessage({
-    name: "createObj"
-}, "*")
+	shadowRootCreater(sampleParent, document.querySelector("#zdttTemp"))
+	window.postMessage({
+	    name: "createObj"
+	}, "*")
+/* sample code ended */
