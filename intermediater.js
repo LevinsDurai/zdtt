@@ -20,24 +20,26 @@ window.addEventListener("message", function(event) {
                 type: "Asap_Not_Found"
             }, "*")
         }
-    } else if (event.data.name == "Department") {
-        if (ZohoHCAsap._defaultoptions.departmentId == "-1") {
-            window.postMessage({
-                name: "department",
-                value: "All"
-            }, "*");
-        } else {
-            ZohoHCAsap.API.Kb.Departments(null, function(response) {
-                    window.postMessage({
-                        name: "department",
-                        value: response.data[0].name
-                    }, "*");
-                },
-                function(errResponse) {
-                    // "console.log(errResponse)"
-                })
-        }
-    } else if (event.data.name == "Article") {
+    } 
+    // else if (event.data.name == "Department") {
+    //     if (ZohoHCAsap._defaultoptions.departmentId == "-1") {
+    //         window.postMessage({
+    //             name: "department",
+    //             value: "All"
+    //         }, "*");
+    //     } else {
+    //         ZohoHCAsap.API.Kb.Departments(null, function(response) {
+    //                 window.postMessage({
+    //                     name: "department",
+    //                     value: response.data[0].name
+    //                 }, "*");
+    //             },
+    //             function(errResponse) {
+    //                 // "console.log(errResponse)"
+    //             })
+    //     }
+    // } 
+    else if (event.data.name == "Article") {
         ZohoHCAsap.API.Kb.Articles.Search({
                 searchStr: event.data.article
             }, function(response) {
@@ -49,7 +51,13 @@ window.addEventListener("message", function(event) {
             function(errResponse) {
                 // "console.log(errResponse)"
             })
-    } else if (event.data.name == "SingleArticle") {
+    }
+
+    else if (event.data.name == "EditorInitiater") {
+        chrome_addons_inner_text = event.data.value;
+    }
+
+    else if (event.data.name == "SingleArticle") {
         ZohoHCAsap.API.Kb.Articles({
                 id: event.data.article
             }, function(response) {

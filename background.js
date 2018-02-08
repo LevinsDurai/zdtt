@@ -61,17 +61,20 @@ chrome.runtime.onMessage.addListener(
                 });
             });
         }
-
-
+        else if(request.zdttMsg == "zdtt_Inject_sidePanel_file"){
+            filesInjecter(request.zdttMsg,sender);
+        }
         /* sample code ... */ 
         else if(request.zdttMsg == "injectSidePanel"){
             filesInjecter("injectSidePanel",sender);
             resp.zdttMsg = "bindEvent"
-
         }
         /* sample code ... */ 
 
-        if(request.zdttMsg != "getCookie"){
+
+
+
+        if(request.zdttMsg != "getCookie" ){
             sendResponse && sendResponse(resp);
         }
     }
@@ -103,6 +106,18 @@ function filesInjecter(fn,sender){
                     file: "zdttPanel.js"
                 });
             });
+            break;
+        case "zdtt_Inject_sidePanel_file":
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, 
+            function(tabs) {
+                chrome.tabs.executeScript(sender.tab.id, {
+                    file: "zdttExtensionBody.js"
+                });
+            });
+
     }
 }
 

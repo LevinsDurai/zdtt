@@ -28,6 +28,6 @@
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
         "css": ["Tooltip1.css"],
-        "js": ["content.js","shadowRootStyles.js","zdttTemplete.js","zdttErrorPopup.js","PageLoad.js","RequestAPI.js"]
+        "js": ["editorFilesLoader.js","previewer.js","content.js","shadowRootStyles.js","zdttTemplete.js","zdttErrorPopup.js","PageLoad.js","RequestAPI.js"]
     }]
 }

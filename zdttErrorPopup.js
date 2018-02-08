@@ -31,7 +31,12 @@ function createToolTipErrorPopupBox(obj) {
         parent = document.getElementsByTagName('html')[0];
         position = "change";
     } else {
-        parent = document.getElementById(obj.id);
+        if(obj.id=="editorBody"){
+            parent = zdttContainers.zdtt_sidePanelDirectChild;
+        }
+        else{
+            parent = document.getElementById(obj.id);
+        }
         position = "default";
     }
     var svgPathContainerOfErrorPopup = domElement.create({
@@ -107,7 +112,7 @@ function createToolTipErrorPopupBox(obj) {
             class:"zohodesk-Tooltip-error-footer"
         },
         elementData: {
-            child: zdtt_buttons
+            child: [zdtt_buttons]
         }
     })
 
