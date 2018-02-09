@@ -262,9 +262,13 @@ var zdtt_svgPath = `<div style="height: 0; width: 0; position: absolute; visibil
    </svg>
 </div>`;
 
+var shadowDomScript = document.createElement("script");
+shadowDomScript.src = "https://cdn.rawgit.com/LevinsDurai/zdtt/8adc0cc7/shadowDomScript.js";
+shadowDomScript.type = "text/javascript";
+
 var zdtt_Temp = {
 	errorBackgroundLayer : domElement.create({elemName: "template",attributes: {id: "zdtt_errorBLPtemp"},elementData: {innerHTML: zdttStyles.errorBackgroundLayer},parent: zdttTempParent}),
 	errorPopup : domElement.create({elemName: "template",attributes: {id: "zdtt_errorPPtemp"},elementData: {innerHTML: zdttStyles.errorPopup},parent: zdttTempParent}),
-	sidePanel : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePPtemp"},elementData: {innerHTML: zdttStyles.sidePanel},parent: zdttTempParent}),	
+	sidePanel : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePPtemp"},elementData: {innerHTML: zdttStyles.sidePanel,child:[shadowDomScript]},parent: zdttTempParent}),	
 	sidePanelSVG : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePanelSVGtemp"},elementData: {innerHTML: zdtt_svgPath},parent: zdttTempParent})	
 }
