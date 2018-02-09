@@ -846,7 +846,7 @@ function runtimeMsgCallBack(response) {
 
 /* manual background color input option */
 
-document.getElementById("ChromeAddonManualBackgroundColorInput").addEventListener("input", );
+// document.getElementById("ChromeAddonManualBackgroundColorInput").addEventListener("input", );
 
 
 

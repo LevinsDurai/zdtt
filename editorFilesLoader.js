@@ -9,14 +9,14 @@ function filesInjector() {
         var Kernelscript = document.createElement("script");
         Kernelscript.type = "text/javascript";
         Kernelscript.className = "desk_support_chromeAddons";
-        Kernelscript.src = "https://cdn.rawgit.com/LevinsDurai/zdtt/fc3c12da/ZohoDeskEditorKernal.min.js";
+        Kernelscript.src = "https://cdn.rawgit.com/LevinsDurai/zdtt/9e7001b2/ZohoDeskEditorKernal.min.js";
         document.getElementsByTagName("head")[0].appendChild(Kernelscript);
 
         var zohoDeskEditterCreater = document.createElement("script");
         zohoDeskEditterCreater.type = "text/javascript";
         zohoDeskEditterCreater.className = "desk_support_chromeAddons";
         zohoDeskEditterCreater.defer = true;
-        zohoDeskEditterCreater.src = "https://cdn.rawgit.com/LevinsDurai/editor/64789851/ZDTT_edit.js";
+        zohoDeskEditterCreater.src = "https://cdn.rawgit.com/LevinsDurai/editor/af501153/ZDTT_edit.js";
         document.getElementsByTagName("head")[0].appendChild(zohoDeskEditterCreater);
     } else {
         filesInjector()
