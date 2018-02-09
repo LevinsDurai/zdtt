@@ -843,3 +843,58 @@ function runtimeMsgCallBack(response) {
 
     }
 }
+
+/* manual background color input option */
+
+document.getElementById("ChromeAddonManualBackgroundColorInput").addEventListener("input", );
+
+
+
+function manualBackgroundColorSetter(e) {
+    var bc = e.srcElement.value;
+    if (bc != "") {
+        try {
+            if (isNaN(bc)) {
+                tooltipBackgroundColourChanger(bc);
+            }
+            if (LastFocusedBC != document.getElementById("chromeAdd-onEditAddonButtonContainer").style.backgroundColor) {
+                lastSelectedColorOptionNode.style.borderColor = "";
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+
+function zdttEditorBGColorChanger(color){
+    return window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
+}
+
+
+
+function tooltipBackgroundColourChanger(color) {
+    var a = document.getElementsByClassName("KB_Editor_iframe")[0];
+    a.contentDocument.body.style.backgroundColor = color;
+    document.getElementById("chromeAdd-onEditAddonButtonContainer").style.background = color;
+}
+
+function separateColorHighliter(e) {
+    if (e.srcElement.firstElementChild != null) {
+        childEle = e.srcElement.firstElementChild;
+        parentEle = childEle.parentNode;
+    } else {
+        childEle = e.target;
+        parentEle = childEle.parentNode;
+    }
+    var bc = window.getComputedStyle(childEle, null).getPropertyValue('background-color');
+    parentEle.style.borderColor = bc;
+    if (lastSelectedColorOptionNode != null) {
+        if (lastSelectedColorOptionNode != parentEle) {
+            lastSelectedColorOptionNode.style.borderColor = "";
+        }
+    }
+    tooltipBackgroundColourChanger(bc);
+    LastFocusedBC = bc;
+    lastSelectedColorOptionNode = parentEle;
+}

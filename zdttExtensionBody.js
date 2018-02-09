@@ -1090,6 +1090,25 @@ function zdttFormElementCreater(type) {
     var popupCallback = zdtt_popupShow(triggerActionPopup);
     triggerActionSwitch.onmouseup = popupCallback;
 
+    zdttContainers.editorParent = domElement.create({
+    	elemName : "div",
+    	attributes:{
+    		id : "editerToolsContainer"
+    	}
+    });
+    zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".zohodesk-Tooltip-editor-content").prepend(zdttContainers.editorParent)
+
+    var manualBCInp = domElement.create({
+        elemName: "input",
+        attributes: {
+            id: "ChromeAddonManualBackgroundColorInput",
+            placeholder:"eg.,#000000",
+			class:"zohodesk-Tooltip-color-value"            
+        },
+        callbackList:[{input:manualBackgroundColorSetter}],
+        parent: zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".zohodesk-Tooltip-color-name")
+    });
+
 }
 
 
@@ -1156,10 +1175,6 @@ function zd_tt_addNewTrigger(type) {
    </div>
    <div class="zohodesk-Tooltip-panel-headline-text">Add Snippet <div class="zohodesk-Tooltip-charactertxt" id="zdttSizeCharInform">Max 150 characters</div></div>
    <div class="zohodesk-Tooltip-editor-content">
-      <div id="editerToolsContainer"></div>
-      <!-- <div class="zohodesk-Tooltip-editAddonButtonContainer" id="chromeAdd-onEditAddonButtonContainer">
-         <input type="text" placeholder="View More" class="zohodesk-Tooltip-popup-button zohodesk-Tooltip-popup-button-input" />
-         </div> -->
       <div class="zohodesk-Tooltip-color-picker zohodesk-Tooltip-cl-both">
          <div class="zohodesk-Tooltip-lft-bar zohodesk-Tooltip-fl-lft">
             <ul class="zohodesk-Tooltip-cl-both zohodesk-Tooltip-list" id="zd_tt_toggleTapsParent">
@@ -1195,15 +1210,8 @@ function zd_tt_addNewTrigger(type) {
          <div class="zohodesk-Tooltip-rt-bar zohodesk-Tooltip-fl-rt">
             <div class="zohodesk-Tooltip-user-input">
                <span class="zohodesk-Tooltip-color-name">
-               <input type="" id="ChromeAddonManualBackgroundColorInput" placeholder="eg.,#000000" class="zohodesk-Tooltip-color-value">
+               		<input type="" id="ChromeAddonManualBackgroundColorInput" placeholder="eg.,#000000" class="zohodesk-Tooltip-color-value">
                </span>
-               <!-- <span class="zohodesk-Tooltip-user-color">
-                  <ul class="zohodesk-Tooltip-cl-both">
-                  <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-10"></span>
-                  </li>
-                  </ul>
-                  </span>  -->
             </div>
          </div>
       </div>
@@ -1217,6 +1225,7 @@ function zd_tt_addNewTrigger(type) {
     var parent = zdttContainers.zdtt_sidepanelSwitchingComp;
     parent.innerHTML = html;
     zdttFormElementCreater("new");
+    window.postMessage({name:"createEditor"},"*");
     // zohoDesk_callEditerIntegration();
     // var triggerNameInput = document.getElementById("zd_tt_triggerName");
     // var articleSearchInput = document.getElementById("searchArticleBox");
