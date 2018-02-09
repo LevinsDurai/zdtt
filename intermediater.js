@@ -53,14 +53,6 @@ window.addEventListener("message", function(event) {
             })
     }
 
-    else if (event.data.name == "EditorInitiater") {
-        chrome_addons_inner_text = event.data.value;
-    }
-    else if (event.data.name == "createEditor") {
-        console.log("editer called");
-        functionLoaderCheck();
-    }
-
     else if (event.data.name == "SingleArticle") {
         ZohoHCAsap.API.Kb.Articles({
                 id: event.data.article
