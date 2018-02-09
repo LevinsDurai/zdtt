@@ -89,11 +89,14 @@ zdttDomElement.prototype.create = function(obj) {
 zdttDomElement.prototype.setData = function(el, obj) {
     if (obj.innerHTML) {
         el.innerHTML = obj.innerHTML;
-    } else if (obj.innerText) {
+    } 
+    else if (obj.innerText) {
         el.innerText = obj.innerText;
-    } else if (obj.value) {
+    } 
+    else if (obj.value) {
         el.value = obj.value;
-    } else if (obj.child){
+    } 
+    if (obj.child){
         for(child of obj.child){
             el.appendChild(child);
         }

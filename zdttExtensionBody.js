@@ -762,6 +762,24 @@ var zdttContainers = {};
 var zdttTabs={};
 var zdtt_lastHighlighted = [];
 var zdtt_nowStatus = "new";
+var Trigger_option = "HOVER";
+var zd_tt_addTooltipObj = {
+    "components": [{
+        "type": "ARTICLESNIPPET",
+        "preferences": null,
+        "order": "0",
+        "solutionId": undefined,
+        "content": ""
+    }],
+    "isEnabled": true,
+    "name": undefined,
+    "preferences": {
+        "bgColor": "#ffffff",
+        "viewSize": "LARGE"
+    },
+    "triggers": [],
+    "viewtype": "TOOLTIP"
+};
 
 function zdttCommonEventsBinder(){
 	document.addEventListener('click', zdtt_mousedownActionShow , true);
@@ -837,8 +855,242 @@ function zdTT_logOut() {
 }
 
 
+function parentHighlighter(elem,action){
+	if(action){
+		if(action.when=="click"){
+			action.element.tabIndex = -1;
+		}
+	}
+	return{
+		focus : function(){
+			if(elem.className.indexOf("zohodesk-Tooltip-active")==-1){
+				elem.className +=" zohodesk-Tooltip-active";
+			}
+		},
+		unfocus : function(){
+			if(elem.className.indexOf("zohodesk-Tooltip-active")!=-1){
+				elem.className =elem.className.split(" zohodesk-Tooltip-active").join("");
+			}
+		}
+	}
+}
+
+function triggerSizeCallback(type,switchElem){
+	return function(event){
+		switchElem.innerHTML=type;
+	}
+}
+
+function triggerActionCallback(type,switchElem){
+	return function(event){
+		switchElem.innerHTML=type;
+		Trigger_option = type=="On Hover" ? "HOVER" : "CLICK"
+	}
+}
 
 
+function zdttFormElementCreater(type) {
+    if (zdtt_nowStatus == "new") {
+        var obj = zd_tt_addTooltipObj;
+    }
+    // else if (zdtt_nowStatus == "update") {
+    //     var obj = ConfigureObjectForEdit;
+    // }
+
+
+    var triggerNameInp = domElement.create({
+        elemName: "input",
+        attributes: {
+            class: "zohodesk-Tooltip-text-box zohodesk-Tooltip-input",
+            id: "zd_tt_triggerName",
+            placeholder: "eg,.Header info icon",
+            type: "text"
+        },
+        elementData: {
+            value: obj.components["0"].content
+        }
+    });
+    var triggerNameBox = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-field"
+        },
+        elementData: {
+            child: [triggerNameInp]
+        }
+    });
+    var triggerNameAction = parentHighlighter(triggerNameBox);
+    triggerNameInp.onfocus = triggerNameAction.focus;
+    triggerNameInp.onblur = triggerNameAction.unfocus;
+    var tnbe = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_tnError");
+    tnbe.parentElement.insertBefore(triggerNameBox, tnbe);
+
+
+
+    var searchRes = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-Selectbox-dropdown zohodesk-Tooltip-Selectbox-dropdown-search",
+            id: "searchDisplay"
+        },
+        elementData: {
+            innerHTML: `<div class="zohodesk-Tooltip-dropdown-header">
+            <span class="zohodesk-Tooltip-search-icon">
+               <span class="zohodesk-Tooltip-editor-icontoprightsearch">
+                  <svg class="zohodesk-tooltip-svg-icon-small">
+                     <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-search"></use>
+                  </svg>
+               </span>
+            </span>
+            <span class="zohodesk-Tooltip-search-result">Did you mean <span id="zd_tt_searchName"></span>?</span>
+         </div>
+         <div class="zohodesk-Tooltip-dropdown-content" id="zohodesk_Tooltip_dropdown_articles_parent_id1"></div>`
+        }
+    });
+    var searchInp = domElement.create({
+        elemName: "input",
+        attributes: {
+            class: "zohodesk-Tooltip-text-box zohodesk-Tooltip-input",
+            id: "searchArticleBox",
+            placeholder: "Search...",
+            type: "text"
+        }
+    });
+    var searchBox = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-field",
+            id: "zdtt_aserchParent"
+        },
+        elementData: {
+            innerHTML: `<div class="zohodesk-Tooltip-form-field-icons">
+		         <span class="zohodesk-Tooltip-editor-iconarticle">
+		            <svg class="zohodesk-tooltip-svg-icon">
+		               <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-article"></use>
+		            </svg>
+		         </span>
+		      </div>`,
+            child: [searchInp, searchRes]
+        }
+    });
+    var searchAction = parentHighlighter(searchBox);
+    searchInp.onfocus = searchAction.focus;
+    searchInp.onblur = searchAction.unfocus;
+    var searchBeforeElem = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_artInpError");
+    searchBeforeElem.parentElement.insertBefore(searchBox, searchBeforeElem);
+
+
+    var triggerSizePopup = domElement.create({
+    	elemName : "div",
+    	attributes : {
+    		class: "zohodesk-Tooltip-Selectbox-dropdown",
+    		id : "zohodesk_tooltip_size_dropDown_id"
+    	},
+    	elementData:{
+    		innerHTML:`<div class="zohodesk-Tooltip-dropdown-content"><ul class="zohodesk-Tooltip-list"></ul></div>`
+    	}
+    });
+    var triggerSizeSwitch = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-selectbox",
+            id:"zohodesk_tooltip_size_shown_id"
+        },
+        elementData: {
+            innerHTML:obj.preferences.viewSize=="LARGE" ? "Large" : obj.preferences.viewSize=="MEDIUM" ? "Medium" : "Small"
+        }
+    });
+    
+    var opts = [{id:"zohodesk-Tooltip-small",name:"Small"},{id:"zohodesk-Tooltip-medium",name:"Medium"},{id:"zohodesk-Tooltip-large",name:"Large"}]
+    for (opt of opts) {
+        var li = domElement.create({
+            elemName: "li",
+            attributes: {
+                class: "zohodesk-Tooltip-dropdown-options",
+                id: opt.id
+            },
+            elementData: {
+                innerHTML: opt.name
+            },
+            callbackList:[{click:triggerSizeCallback(opt.name,triggerSizeSwitch)}]
+        });
+        triggerSizePopup.querySelector(".zohodesk-Tooltip-list").appendChild(li);
+    }
+    var triggerSizeBox = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-field"
+        },
+        elementData: {
+            child: [triggerSizeSwitch, triggerSizePopup]
+        },
+        parent: zdttContainers.zdtt_sidepanelSwitchingComp.querySelectorAll(".zohodesk-Tooltip-panel-form-field-label")[0].parentElement
+    });
+
+    var sizeAction = parentHighlighter(triggerSizeBox,{when:"click",element:triggerSizeSwitch});
+    triggerSizeSwitch.onfocus = sizeAction.focus;
+    triggerSizeSwitch.onblur = sizeAction.unfocus;
+
+    var popupCallback = zdtt_popupShow(triggerSizePopup);
+    triggerSizeSwitch.onmouseup = popupCallback;
+
+    /* trigger action popup */ 
+
+    var triggerActionPopup = domElement.create({
+    	elemName : "div",
+    	attributes : {
+    		class: "zohodesk-Tooltip-Selectbox-dropdown",
+    		id : "zohodesk_tooltip_size_dropDown_id"
+    	},
+    	elementData:{
+    		innerHTML:`<div class="zohodesk-Tooltip-dropdown-content"><ul class="zohodesk-Tooltip-list"></ul></div>`
+    	}
+    });
+    var triggerActionSwitch = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-selectbox",
+            id:"zohodesk_tooltip_trigger"
+        },
+        elementData: {
+            innerHTML:Trigger_option=="CLICK" ? "On Click" : "On Hover"
+        }
+    });
+    
+    var opts = [{id:"zohodesk_tooltip_trigger_options_onClick",name:"On Click"},{id:"zohodesk_tooltip_trigger_options_onHover",name:"On Hover"}]
+    for (opt of opts) {
+        var li = domElement.create({
+            elemName: "li",
+            attributes: {
+                class: "zohodesk-Tooltip-dropdown-options",
+                id: opt.id
+            },
+            elementData: {
+                innerHTML: opt.name
+            },
+            callbackList:[{click:triggerActionCallback(opt.name,triggerActionSwitch)}]
+        });
+        triggerActionPopup.querySelector(".zohodesk-Tooltip-list").appendChild(li);
+    }
+    var triggerSizeBox = domElement.create({
+        elemName: "div",
+        attributes: {
+            class: "zohodesk-Tooltip-panel-form-field"
+        },
+        elementData: {
+            child: [triggerActionSwitch, triggerActionPopup]
+        },
+        parent: zdttContainers.zdtt_sidepanelSwitchingComp.querySelectorAll(".zohodesk-Tooltip-panel-form-field-label")[1].parentElement
+    });
+
+    var sizeAction = parentHighlighter(triggerSizeBox,{when:"click",element:triggerActionSwitch});
+    triggerActionSwitch.onfocus = sizeAction.focus;
+    triggerActionSwitch.onblur = sizeAction.unfocus;
+
+    var popupCallback = zdtt_popupShow(triggerActionPopup);
+    triggerActionSwitch.onmouseup = popupCallback;
+
+}
 
 
 
@@ -856,9 +1108,6 @@ function zd_tt_addNewTrigger(type) {
     var html = `<div class="zohodesk-Tooltip-panel-content zohodesk-Tooltip-panel-contentplur">
     <div class="zohodesk-Tooltip-plurdiv" ></div>
    <div class="zohodesk-Tooltip-panel-headline-text">Trigger Name <span style="color: #ff6f64;"> *</span> </div>
-   <div class="zohodesk-Tooltip-panel-form-field" style="margin-bottom:0px;">
-      <input type="text" class="zohodesk-Tooltip-text-box zohodesk-Tooltip-input" placeholder="eg,.Header info icon" id="zd_tt_triggerName">
-   </div>
    <span class="zd_tt_errorbox" id="zd_tt_tnError"></span>
    <div class="zohodesk-Tooltip-container" id="zd_tt_elementAlertBox">
         <div class="zohodesk-Tooltip-descriptionBox">
@@ -895,71 +1144,14 @@ function zd_tt_addNewTrigger(type) {
         </div>
    </div>
    <div class="zohodesk-Tooltip-panel-headline-text">Choose Article <span style="color: #ff6f64;"> *</span> </div>
-   <div class="zohodesk-Tooltip-panel-form-field"  id="zdtt_aserchParent" style="margin-bottom:0px">
-      <div class="zohodesk-Tooltip-form-field-icons">
-         <span class="zohodesk-Tooltip-editor-iconarticle">
-            <svg class="zohodesk-tooltip-svg-icon">
-               <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-article"></use>
-            </svg>
-         </span>
-      </div>
-      <input type="text" class="zohodesk-Tooltip-text-box zohodesk-Tooltip-input" placeholder="Search..." id="searchArticleBox">
-      <div class="zohodesk-Tooltip-Selectbox-dropdown zohodesk-Tooltip-Selectbox-dropdown-search" id="searchDisplay">
-         <div class="zohodesk-Tooltip-dropdown-header">
-            <span class="zohodesk-Tooltip-search-icon">
-               <span class="zohodesk-Tooltip-editor-icontoprightsearch">
-                  <svg class="zohodesk-tooltip-svg-icon-small">
-                     <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-search"></use>
-                  </svg>
-               </span>
-            </span>
-            <span class="zohodesk-Tooltip-search-result">Did you mean <span id="zd_tt_searchName"></span>?</span>
-         </div>
-      </div>
-   </div>
+   
    <span class="zd_tt_errorbox" id="zd_tt_artInpError"></span>
-   <div class="zohodesk-Tooltip-panel-form-field zohodesk-Tooltip-panel-form-field-notallowed zohodesk-Tooltip-hide" id="Chrome_Extension_AnchorTagTotalParent" style="margin-top:15px">
-      <div class="zohodesk-Tooltip-form-field-icons">
-         <span class="zohodesk-Tooltip-editor-iconanchor">
-            <svg class="zohodesk-tooltip-svg-icon">
-               <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-anchor"></use>
-            </svg>
-         </span>
-      </div>
-      <div class="zohodesk-Tooltip-panel-form-selectbox zohodesk-Tooltip-placeholder-tag" id="Chrome_Extension_AnChorTag" style="cursor:not-allowed">Anchor tag not selected</div>
-      <div class="zohodesk-Tooltip-Selectbox-dropdown zohodesk-Tooltip-tags" id="Chrome_Extension_AnChorTag_Show">
-      </div>
-   </div>
    <div class="zohodesk-Tooltip-multi-form-field">
       <div class="zohodesk-Tooltip-fields">
          <div class="zohodesk-Tooltip-panel-form-field-label">Tooltip Size</div>
-         <div class="zohodesk-Tooltip-panel-form-field">
-            <div class="zohodesk-Tooltip-panel-form-selectbox" id="zohodesk_tooltip_size_shown_id">Large</div>
-            <div class="zohodesk-Tooltip-Selectbox-dropdown" id="zohodesk_tooltip_size_dropDown_id">
-               <div class="zohodesk-Tooltip-dropdown-content">
-                  <ul class="zohodesk-Tooltip-list">
-                     <li class="zohodesk-Tooltip-dropdown-options" id="zohodesk-Tooltip-small">Small</li>
-                     <li class="zohodesk-Tooltip-dropdown-options" id="zohodesk-Tooltip-medium">Medium</li>
-                     <li class="zohodesk-Tooltip-dropdown-options" id="zohodesk-Tooltip-large">Large</li>
-                  </ul>
-               </div>
-            </div>
-            
-         </div>
       </div>
       <div class="zohodesk-Tooltip-fields">
          <div class="zohodesk-Tooltip-panel-form-field-label">Activate Trigger</div>
-         <div class="zohodesk-Tooltip-panel-form-field">
-            <div class="zohodesk-Tooltip-panel-form-selectbox" id="zohodesk_tooltip_trigger">On Hover</div>
-            <div class="zohodesk-Tooltip-Selectbox-dropdown" id="zohodesk_tooltip_trigger_options">
-               <div class="zohodesk-Tooltip-dropdown-content">
-                  <ul class="zohodesk-Tooltip-list">
-                     <li class="zohodesk-Tooltip-dropdown-options" id="zohodesk_tooltip_trigger_options_onClick">On Click</li>
-                     <li class="zohodesk-Tooltip-dropdown-options" id="zohodesk_tooltip_trigger_options_onHover">On Hover</li>
-                  </ul>
-               </div>
-            </div>
-         </div>
       </div>
    </div>
    <div class="zohodesk-Tooltip-panel-headline-text">Add Snippet <div class="zohodesk-Tooltip-charactertxt" id="zdttSizeCharInform">Max 150 characters</div></div>
@@ -1024,6 +1216,7 @@ function zd_tt_addNewTrigger(type) {
 `;
     var parent = zdttContainers.zdtt_sidepanelSwitchingComp;
     parent.innerHTML = html;
+    zdttFormElementCreater("new");
     // zohoDesk_callEditerIntegration();
     // var triggerNameInput = document.getElementById("zd_tt_triggerName");
     // var articleSearchInput = document.getElementById("searchArticleBox");

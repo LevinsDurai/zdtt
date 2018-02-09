@@ -62,10 +62,6 @@
   height: auto !important;
   text-align: left !important;
 }
-input[type="text"].zohodesk-Tooltip-input::-webkit-input-placeholder {
-  color: #8996a0;
-  font-size: 14px !important;
-}
 
 [class^="zohodesk-Tooltip-editor-iconEditor"] {
   cursor: pointer;
@@ -300,21 +296,12 @@ input[type="text"].zohodesk-Tooltip-input::-webkit-input-placeholder {
     border-radius: 0px;
 }
 
-.zohodesk-Tooltip-panel-content .zohodesk-Tooltip-panel-form-field {
-  margin-bottom: 15px;
-}
 
 .zohodesk-Tooltip-panel-headline-text {
   color: #455264;
   margin-bottom: 8px;
   font-size: 14px !important;
   margin-top: 20px;
-}
-.zohodesk-Tooltip-panel-headline-text.zohodesk-Tooltip-charactertxt{
-  color: #8a95a4;
-    font-size: 12px !important;
-    text-transform: capitalize;
-      margin-top: 0px;
 }
 
 .zohodesk-Tooltip-panel-form-field {
@@ -327,6 +314,9 @@ input[type="text"].zohodesk-Tooltip-input::-webkit-input-placeholder {
   box-sizing: border-box;
 }
 
+.zohodesk-Tooltip-panel-content .zohodesk-Tooltip-panel-form-field {
+  margin-bottom: 15px;
+}
 
 .zohodesk-Tooltip-form-field-icons {
   display: inline-block;
@@ -345,9 +335,18 @@ input[type="text"].zohodesk-Tooltip-input::-webkit-input-placeholder {
   box-sizing: border-box;
 }
 
+.zohodesk-Tooltip-text-box {
+  vertical-align: middle;
+  width: 100% !important;
+  color: #455264;
+  display: inline-block !important;
+  font-size: 14px !important;
+}
 
-
-
+input[type="text"].zohodesk-Tooltip-input::-webkit-input-placeholder {
+  color: #8996a0;
+  font-size: 14px !important;
+}
 
 input[type="text"].zohodesk-Tooltip-popup-button-input::-webkit-input-placeholder {
   color: #fff;
@@ -1212,11 +1211,6 @@ input[type="text"].zohodesk-Tooltip-popup-button-input::-webkit-input-placeholde
 .zohodesk-Tooltip-selectOpts + .zohodesk-Tooltip-selectOpts {
   margin-left: 10px;
 }
-
-.zohodesk-Tooltip-selectOpts:hover {
-  border-bottom: 2.5px solid #4ec36d;
-}
-
 .zohodesk-Tooltip-selectOptsContent .zohodesk-Tooltip-list{
   height:100%;
 }
@@ -1231,6 +1225,11 @@ input[type="text"].zohodesk-Tooltip-popup-button-input::-webkit-input-placeholde
     cursor: pointer;
 
 }
+
+.zohodesk-Tooltip-selectOpts:hover {
+  border-bottom: 2.5px solid #4ec36d;
+}
+
 
 .zohodesk-Tooltip-list .zohodesk-Tooltip-selectedOpts {
   border-bottom: 2.5px solid #4ec36d;
@@ -1900,7 +1899,12 @@ input[type="text"].zohodesk-Tooltip-popup-button-input::-webkit-input-placeholde
 .zohodesk-Tooltip-container{
   margin-top: 20px;
 }
-
+.zohodesk-Tooltip-panel-headline-text.zohodesk-Tooltip-charactertxt{
+  color: #8a95a4;
+    font-size: 12px !important;
+    text-transform: capitalize;
+      margin-top: 0px;
+}
 /*Add-New-Trigger-Message-css-START*/
 .zohodesk-Tooltip-descriptionBox{
     padding: 15px;
@@ -2260,13 +2264,7 @@ ul.zohodesk-Tooltip-list li{
 .zohodesk-Tooltip-form-field-icons + .zohodesk-Tooltip-text-box{
   width:92% !important;
 }
-.zohodesk-Tooltip-text-box {
-  vertical-align: middle;
-  width: 100% !important;
-  color: #455264;
-  display: inline-block !important;
-  font-size: 14px !important;
-}
+
 
 
 /* maximize styles ... */
