@@ -266,9 +266,28 @@ var shadowDomScript = document.createElement("script");
 shadowDomScript.src = "https://cdn.rawgit.com/LevinsDurai/zdtt/8adc0cc7/shadowDomScript.js";
 shadowDomScript.type = "text/javascript";
 
+
+var zohodeskInitJs = document.createElement("script");
+zohodeskInitJs.type = "text/javascript";
+zohodeskInitJs.className = "desk_support_chromeAddons";
+zohodeskInitJs.src = "https://cdn.rawgit.com/LevinsDurai/editor/ca5c976b/ZohoDeskEditor_Tooltip_Init.js";
+
+var Kernelscript = document.createElement("script");
+Kernelscript.type = "text/javascript";
+Kernelscript.className = "desk_support_chromeAddons";
+Kernelscript.src = "https://js.zohostatic.com/support/1316166/ZohoDeskEditorKernal.min.js";
+
+var zohoDeskEditterCreater = document.createElement("script");
+zohoDeskEditterCreater.type = "text/javascript";
+zohoDeskEditterCreater.className = "desk_support_chromeAddons";
+zohoDeskEditterCreater.defer = true;
+zohoDeskEditterCreater.src = "https://cdn.rawgit.com/LevinsDurai/editor/master/ZDTT_edit.js";
+
+
+
 var zdtt_Temp = {
 	errorBackgroundLayer : domElement.create({elemName: "template",attributes: {id: "zdtt_errorBLPtemp"},elementData: {innerHTML: zdttStyles.errorBackgroundLayer},parent: zdttTempParent}),
 	errorPopup : domElement.create({elemName: "template",attributes: {id: "zdtt_errorPPtemp"},elementData: {innerHTML: zdttStyles.errorPopup},parent: zdttTempParent}),
-	sidePanel : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePPtemp"},elementData: {innerHTML: zdttStyles.sidePanel,child:[shadowDomScript]},parent: zdttTempParent}),	
+	sidePanel : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePPtemp"},elementData: {innerHTML: zdttStyles.sidePanel,child:[zohodeskInitJs,Kernelscript,zohoDeskEditterCreater,shadowDomScript]},parent: zdttTempParent}),	
 	sidePanelSVG : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePanelSVGtemp"},elementData: {innerHTML: zdtt_svgPath},parent: zdttTempParent})	
 }
