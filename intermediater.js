@@ -39,12 +39,12 @@ window.addEventListener("message", function(event) {
     //             })
     //     }
     // } 
-    else if (event.data.name == "Article") {
+    else if (event.data.name == "zdttArticleSearch") {
         ZohoHCAsap.API.Kb.Articles.Search({
-                searchStr: event.data.article
+                searchStr: event.data.searchStr
             }, function(response) {
                 window.postMessage({
-                    name: "article",
+                    name: "articleSearchResult",
                     value: response.data
                 }, "*");
             },

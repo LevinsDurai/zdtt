@@ -854,6 +854,25 @@ function zdTT_logOut() {
     });
 }
 
+function getArticleName(searchStr) {
+    searchStr = searchStr + "*";
+    window.postMessage({
+        name: "zdttArticleSearch",
+        searchStr: searchStr
+    }, "*");
+};
+
+function zdttArticleSearch(popup) {
+    return function(e) {
+        console.log(e.target.value, "#######")
+        if (e.target.value.trim() == "") {
+            hide(popup);
+        } else {
+            zdttContainers.searchRes.querySelector("#zd_tt_searchName").innerHTML = e.target.value;
+            getArticleName(e.target.value);
+        }
+    }
+}
 
 function parentHighlighter(elem,action){
 	if(action){
@@ -927,7 +946,7 @@ function zdttFormElementCreater(type) {
 
 
 
-    var searchRes = domElement.create({
+    zdttContainers.searchRes = domElement.create({
         elemName: "div",
         attributes: {
             class: "zohodesk-Tooltip-Selectbox-dropdown zohodesk-Tooltip-Selectbox-dropdown-search",
@@ -947,14 +966,15 @@ function zdttFormElementCreater(type) {
          <div class="zohodesk-Tooltip-dropdown-content" id="zohodesk_Tooltip_dropdown_articles_parent_id1"></div>`
         }
     });
-    var searchInp = domElement.create({
+    zdttContainers.searchInp = domElement.create({
         elemName: "input",
         attributes: {
             class: "zohodesk-Tooltip-text-box zohodesk-Tooltip-input",
             id: "searchArticleBox",
             placeholder: "Search...",
             type: "text"
-        }
+        },
+        callbackList:[{input:zdttArticleSearch(zdttContainers.searchRes)}]
     });
     var searchBox = domElement.create({
         elemName: "div",
@@ -970,12 +990,12 @@ function zdttFormElementCreater(type) {
 		            </svg>
 		         </span>
 		      </div>`,
-            child: [searchInp, searchRes]
+            child: [zdttContainers.searchInp, zdttContainers.searchRes]
         }
     });
     var searchAction = parentHighlighter(searchBox);
-    searchInp.onfocus = searchAction.focus;
-    searchInp.onblur = searchAction.unfocus;
+    zdttContainers.searchInp.onfocus = searchAction.focus;
+    zdttContainers.searchInp.onblur = searchAction.unfocus;
     var searchBeforeElem = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_artInpError");
     searchBeforeElem.parentElement.insertBefore(searchBox, searchBeforeElem);
 
@@ -1108,6 +1128,7 @@ function zdttFormElementCreater(type) {
         callbackList:[{input:manualBackgroundColorSetter}],
         parent: zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".zohodesk-Tooltip-color-name")
     });
+    zdttInstantBGColorsCreater(zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_toggleTapsParent"));
 
 }
 
@@ -1178,40 +1199,12 @@ function zd_tt_addNewTrigger(type) {
       <div class="zohodesk-Tooltip-color-picker zohodesk-Tooltip-cl-both">
          <div class="zohodesk-Tooltip-lft-bar zohodesk-Tooltip-fl-lft">
             <ul class="zohodesk-Tooltip-cl-both zohodesk-Tooltip-list" id="zd_tt_toggleTapsParent">
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-1"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-2"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-3"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-4"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-5"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-6"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-7"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-8"></span>
-               </li>
-               <li class="zohodesk-Tooltip-clr-box">
-                  <span class="zohodesk-Tooltip-color" id="zohodesk-Tooltip-color-9"></span>
-               </li>
+               
             </ul>
          </div>
          <div class="zohodesk-Tooltip-rt-bar zohodesk-Tooltip-fl-rt">
             <div class="zohodesk-Tooltip-user-input">
-               <span class="zohodesk-Tooltip-color-name">
-               		<input type="" id="ChromeAddonManualBackgroundColorInput" placeholder="eg.,#000000" class="zohodesk-Tooltip-color-value">
-               </span>
+               <span class="zohodesk-Tooltip-color-name"></span>
             </div>
          </div>
       </div>
@@ -1727,6 +1720,32 @@ function ZDTT_topHeaderTapsCreater() {
     }
 }
 
+function zdttInstantBGColorsCreater(elem){
+    for (var i = 1; i < 10; i++) {
+        
+    	var span = domElement.create({
+            elemName: "span",
+            attributes: {
+                class: "zohodesk-Tooltip-color",
+                id:"zohodesk-Tooltip-color-"+i
+            },
+            callbackList:[{click:separateColorHighliter}]
+        })
+
+        var li = domElement.create({
+            elemName: "li",
+            attributes: {
+                class: "zohodesk-Tooltip-clr-box"
+            },
+            elementData:{
+            	child : [span]
+            },
+            parent:elem
+        })
+
+    }
+
+}
 
 
 

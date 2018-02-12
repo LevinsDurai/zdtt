@@ -1,4 +1,6 @@
 var zdttTriggerOldFocused = undefined;
+var LastFocusedBC = undefined;
+var lastSelectedColorOptionNode = undefined;
 var zd_TT_sidePanelViewed = true ;
 var zd_ATTitsEnabled = false;
 var requestAPI = undefined ;
@@ -7,6 +9,8 @@ var commomDomainNameForAPI = "desk.zoho.com";
 var zd_tt_triggerListing = "ALL";
 var zdTT_user = {};  
 var lastLoadingElem = undefined;
+var zd_tt_articleSelected = undefined;
+var zd_tt_selectedArticleTitle = undefined;
 
 var ConfigureObjects = undefined;
 var TriggerListAllObjMaintanense = [];
@@ -605,6 +609,71 @@ function getConfiguredMessages(filter,loading) {
     })
 }
 
+function postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInnerConent) {
+    requestAPI('https://' + commomDomainNameForAPI + '/api/web/solutionsnippet/snippets/' + ArticlesObject[i].id + '?orgId=' + organitationID).get().then((res) => {
+        if (res.responseStatus === 200) {
+            if (res.obj.length != 0) {
+                obj.components["0"].contentId = res.obj["0"].id;
+                Chrome_Extension_ArticleSummary = res.obj["0"].snippet;
+                lastArticleKBshortContent = res.obj["0"].snippet;
+                if (zd_tt_editerInnerConent == "" || zd_tt_editerInnerConent == "<div><br></div>") {
+                    obj.components["0"].content = res.obj["0"].snippet;
+                    injectTheIframeValue.contentDocument.body.innerHTML = res.obj["0"].snippet;
+                }
+            } else {
+                Chrome_Extension_ArticleSummary = ArticlesObject[i].summary;
+                lastArticleKBshortContent = ArticlesObject[i].summary;
+                if (zd_tt_editerInnerConent == "" || zd_tt_editerInnerConent == "<div><br></div>") {
+                    obj.components["0"].content = ArticlesObject[i].summary;
+                    injectTheIframeValue.contentDocument.body.innerHTML = "<div>" + ArticlesObject[i].summary + "</div>";
+                }
+            }
+        } else {
+            if (res.obj.message == "You Have No Permission to Perform this Action") {
+                createToolTipErrorPopupBox({
+                    id: "editorBody",
+                    buttons: [{
+                        id: "zd_tt_permissionErrors",
+                        content: "ok"
+                    }],
+                    content: "<b>You have no permission to configure this portal.</b> sorry contact your PORTAL admin."
+                });
+                document.addEventListener("mousedown", errorPopupCallbackFunction, true);
+            }
+        }
+    })
+}
+
+function zdttArticleSelectorBinder(id) {
+    return function(e) {
+        var obj = undefined;
+        var injectTheIframeValue = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".KB_Editor_iframe");
+        if (zdtt_nowStatus == "new") {
+            obj = zd_tt_addTooltipObj;
+        } else if (zdtt_nowStatus == "update") {
+            obj = ConfigureObjectForEdit;
+        }
+        var zd_tt_editerInnerConent = obj.components["0"].content.split(" ").join("");
+        for (article of ArticlesObject) {
+            if (id == article.id) {
+                zdttContainers.searchInp.value = article.title;
+                postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInnerConent)
+                hide("searchDisplay");
+                zd_tt_articleSelected = true;
+                zd_tt_selectedArticleTitle = article.title;
+                zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_artInpError").innerText = "";
+                zdttContainers.searchInp.parentElement.className = zdttContainers.searchInp.parentElement.className.split(" zd_tt_notfilledErrorStyle").join('');
+                // window.postMessage({
+                //     name: "SingleArticle",
+                //     article: e.target.id
+                // }, "*");
+            }
+        }
+    }
+}
+
+
+
 window.addEventListener("message", function(event) {
     if (event.data.type === "toolTip_orgId") {
         organitationID = event.data.orgId;
@@ -620,6 +689,49 @@ window.addEventListener("message", function(event) {
         lastLoadingElem = zdttLoading(zdttContainers.zdtt_sidepanelSwitchingComp);
         lastLoadingElem.inject();
         getConfiguredMessages(filter,lastLoadingElem);
+    }
+    else if (event.data.name == "articleSearchResult") {
+        var ArticlesObject = event.data.value;
+        var parentDiv = zdttContainers.searchRes.querySelector("#zohodesk_Tooltip_dropdown_articles_parent_id1");
+        parentDiv.innerHTML = "";
+
+        var container = domElement.create({
+            elemName: "ul",
+            attributes: {
+                class: "zohodesk-Tooltip-list"
+            }
+        });
+
+
+        // var container = document.createElement("ul");
+        // container.className = "zohodesk-Tooltip-list";
+        if (ArticlesObject != undefined) {
+            for(article of ArticlesObject){
+               var child = domElement.create({
+                    elemName: "li",
+                    attributes: {
+                        class: "zohodesk-Tooltip-dropdown-options",
+                        id:article.id
+                    },
+                    elementData:{
+                        child:document.createTextNode(article.title)
+                    },
+                    callbackList:[{click:zdttArticleSelectorBinder(article.id)}],
+                    parent:container
+                }); 
+            }
+            parentDiv.appendChild(container);
+            // var element = document.getElementById("searchDisplay").getElementsByTagName('div')[1];
+            // if (element != undefined) {
+            //     element.parentElement.removeChild(element);
+            // }
+            // document.getElementById("searchDisplay").appendChild(parentDiv);
+            show("searchDisplay");
+
+            // document.getElementById("zohodesk_Tooltip_dropdown_articles_parent_id1").onclick = function(e) {
+            //     Chrome_Extension_Get_Select_Article(e);
+            // }
+        }
     }
 })
 
@@ -852,12 +964,14 @@ function runtimeMsgCallBack(response) {
 
 function manualBackgroundColorSetter(e) {
     var bc = e.srcElement.value;
+    var latestBGC = "";
     if (bc != "") {
         try {
             if (isNaN(bc)) {
-                tooltipBackgroundColourChanger(bc);
+                latestBGC = tooltipBackgroundColourChanger(bc);
             }
-            if (LastFocusedBC != document.getElementById("chromeAdd-onEditAddonButtonContainer").style.backgroundColor) {
+            if (LastFocusedBC != latestBGC) {
+                LastFocusedBC = undefined;
                 lastSelectedColorOptionNode.style.borderColor = "";
             }
         } catch (error) {
@@ -867,29 +981,29 @@ function manualBackgroundColorSetter(e) {
 }
 
 
-function zdttEditorBGColorChanger(color){
-    return window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
+function zdttEditorBGColorFinder(elem){
+    return window.getComputedStyle( elem ,null).getPropertyValue('background-color');
 }
 
 
 
 function tooltipBackgroundColourChanger(color) {
-    var a = document.getElementsByClassName("KB_Editor_iframe")[0];
+    var a = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".KB_Editor_iframe");
     a.contentDocument.body.style.backgroundColor = color;
-    document.getElementById("chromeAdd-onEditAddonButtonContainer").style.background = color;
+    return zdttEditorBGColorFinder(a.contentDocument.body)
 }
 
 function separateColorHighliter(e) {
-    if (e.srcElement.firstElementChild != null) {
-        childEle = e.srcElement.firstElementChild;
-        parentEle = childEle.parentNode;
-    } else {
-        childEle = e.target;
-        parentEle = childEle.parentNode;
+    var childEle = e.target;
+    var parentEle = childEle.parentNode;
+    var bc = zdttEditorBGColorFinder(childEle);
+    if(bc=="rgb(255, 255, 255)"){
+        parentEle.style.borderColor="rgba(0, 0, 0, 0.1)";
     }
-    var bc = window.getComputedStyle(childEle, null).getPropertyValue('background-color');
-    parentEle.style.borderColor = bc;
-    if (lastSelectedColorOptionNode != null) {
+    else{
+        parentEle.style.borderColor = bc;
+    };
+    if (lastSelectedColorOptionNode) {
         if (lastSelectedColorOptionNode != parentEle) {
             lastSelectedColorOptionNode.style.borderColor = "";
         }
