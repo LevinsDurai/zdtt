@@ -1,5 +1,6 @@
 var lastPrivewedElem = undefined;
 var latestPositionOfMouse = undefined;
+var mouseOverDone = true;
 
 var TooltipExtension = {};
 
@@ -17,6 +18,7 @@ function RestartMouseOver(e) {
 
 
 function Chrome_Extension_RequireFunctionFlow(ConfigureObjects) {
+    console.log("Chrome_Extension_RequireFunctionFlow loaded");
     var Chrome_Extension_CurrentDomainPath = window.location.pathname;
     for (var i = 0; i < ConfigureObjects.length; i++) {
         for (var j = 0; j < ConfigureObjects[i].triggers.length; j++) {
@@ -251,7 +253,7 @@ function Chrome_Extension_popupdesign(editPUobj) {
                 e.preventDefault();
                 e.stopPropagation()
             };
-            editIcon.onclick = withoutSidepanelEditOpt(editPUobj.object, editPUobj.ind);
+            // editIcon.onclick = withoutSidepanelEditOpt(editPUobj.object, editPUobj.ind);
             document.getElementById("zdtt_popupIconParent").prepend(editIcon);
         }
     }

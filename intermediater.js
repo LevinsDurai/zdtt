@@ -43,10 +43,12 @@ window.addEventListener("message", function(event) {
         ZohoHCAsap.API.Kb.Articles.Search({
                 searchStr: event.data.searchStr
             }, function(response) {
-                window.postMessage({
-                    name: "articleSearchResult",
-                    value: response.data
-                }, "*");
+                if(response){
+                    window.postMessage({
+                        name: "articleSearchResult",
+                        value: response.data
+                    }, "*");
+                }
             },
             function(errResponse) {
                 // "console.log(errResponse)"
@@ -65,10 +67,12 @@ window.addEventListener("message", function(event) {
         ZohoHCAsap.API.Kb.Articles({
                 id: event.data.article
             }, function(response) {
-                window.postMessage({
-                    name: "SingleArticleObject",
-                    value: response
-                }, "*");
+                if(response){
+                    window.postMessage({
+                        name: "SingleArticleObject",
+                        value: response
+                    }, "*");
+                }
             },
             function(errResponse) {
                 // "console.log(errResponse)"

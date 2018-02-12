@@ -1,5 +1,21 @@
 var zdttTempParent = document.getElementsByTagName('html')[0];
 
+var zdtt_outerSvgPath = `<div style="height:0;width:0;position:absolute;visibility:hidden;">
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <symbol id="delete" viewBox="0 0 48 48">
+            <path d="M9.048,44.472C9.107,45.885,10.27,47,11.684,47h24.632c1.414,0,2.577-1.115,2.637-2.528l1.759-30.705H7.288L9.048,44.472z
+            M29.572,22.99c0-0.592,0.479-1.072,1.072-1.072h1.714c0.592,0,1.072,0.48,1.072,1.072v14.786c0,0.592-0.48,1.072-1.072,1.072
+            h-1.714c-0.592,0-1.072-0.479-1.072-1.072V22.99z M22.072,22.99c0-0.592,0.479-1.072,1.071-1.072h1.715
+            c0.592,0,1.071,0.48,1.071,1.072v14.786c0,0.592-0.48,1.072-1.071,1.072h-1.715c-0.592,0-1.071-0.479-1.071-1.072V22.99z
+             M14.57,22.99c0-0.592,0.479-1.072,1.072-1.072h1.714c0.592,0,1.072,0.48,1.072,1.072v14.786c0,0.592-0.48,1.072-1.072,1.072
+            h-1.714c-0.592,0-1.072-0.479-1.072-1.072V22.99z M14.57,22.99"></path>
+            
+            <path d="M41.883,3.701H30.519V1.553C30.519,1.248,30.272,1,29.966,1H18.034c-0.305,0-0.553,0.248-0.553,0.553v2.148H6.117
+            c-0.914,0-1.656,0.741-1.656,1.656v5.201h39.077V5.357C43.539,4.443,42.797,3.701,41.883,3.701L41.883,3.701z M41.883,3.701"></path>
+        </symbol>
+    </svg>
+</div>`;
+
 var zdtt_svgPath = `<div style="height: 0; width: 0; position: absolute; visibility: hidden">
    <svg xmlns="http://www.w3.org/2000/svg">
    <symbol id="Tooltip-dragdrop" viewBox="0 0 48 48">
@@ -289,5 +305,13 @@ var zdtt_Temp = {
 	errorBackgroundLayer : domElement.create({elemName: "template",attributes: {id: "zdtt_errorBLPtemp"},elementData: {innerHTML: zdttStyles.errorBackgroundLayer},parent: zdttTempParent}),
 	errorPopup : domElement.create({elemName: "template",attributes: {id: "zdtt_errorPPtemp"},elementData: {innerHTML: zdttStyles.errorPopup},parent: zdttTempParent}),
 	sidePanel : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePPtemp"},elementData: {innerHTML: zdttStyles.sidePanel},parent: zdttTempParent}),     // child:[zohodeskInitJs,Kernelscript,zohoDeskEditterCreater,shadowDomScript]	
-	sidePanelSVG : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePanelSVGtemp"},elementData: {innerHTML: zdtt_svgPath},parent: zdttTempParent})	
+	sidePanelSVG : domElement.create({elemName: "template",attributes: {id: "zdtt_sidePanelSVGtemp"},elementData: {innerHTML: zdtt_svgPath},parent: zdttTempParent}),
 }
+
+domElement.create({
+    elemName : "div",
+    elementData:{
+        innerHTML : zdtt_outerSvgPath
+    },
+    parent:zdttTempParent 
+});

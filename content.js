@@ -1,4 +1,5 @@
 var zdttTriggerOldFocused = undefined;
+var ArticlesObject = undefined;
 var LastFocusedBC = undefined;
 var lastSelectedColorOptionNode = undefined;
 var zd_TT_sidePanelViewed = true ;
@@ -15,6 +16,7 @@ var zd_tt_selectedArticleTitle = undefined;
 var ConfigureObjects = undefined;
 var TriggerListAllObjMaintanense = [];
 var listOfTriggersObj = undefined;
+var finalizedColor = "rgb(250,250,250)";
 
 function findHighestZIndex(elem) {
     var elems = document.getElementsByTagName(elem);
@@ -573,7 +575,7 @@ function getConfiguredMessages(filter,loading) {
         if (res.responseStatus === 200) {
             res = res.obj;
             if (zd_ATTitsEnabled) {
-                // Chrome_Extension_RequireFunctionFlow(res);
+                Chrome_Extension_RequireFunctionFlow(res);
                 ConfigureObjects = res;
                 for (var x = 0; x < res.length; x++) {
                     TriggerListAllObjMaintanense[x] = res[x];
@@ -609,8 +611,8 @@ function getConfiguredMessages(filter,loading) {
     })
 }
 
-function postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInnerConent) {
-    requestAPI('https://' + commomDomainNameForAPI + '/api/web/solutionsnippet/snippets/' + ArticlesObject[i].id + '?orgId=' + organitationID).get().then((res) => {
+function postContentIntotheEditor(article, obj, injectTheIframeValue, zd_tt_editerInnerConent) {
+    requestAPI('https://' + commomDomainNameForAPI + '/api/web/solutionsnippet/snippets/' + article.id + '?orgId=' + organitationID).get().then((res) => {
         if (res.responseStatus === 200) {
             if (res.obj.length != 0) {
                 obj.components["0"].contentId = res.obj["0"].id;
@@ -621,11 +623,11 @@ function postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInne
                     injectTheIframeValue.contentDocument.body.innerHTML = res.obj["0"].snippet;
                 }
             } else {
-                Chrome_Extension_ArticleSummary = ArticlesObject[i].summary;
-                lastArticleKBshortContent = ArticlesObject[i].summary;
+                Chrome_Extension_ArticleSummary = article.summary;
+                lastArticleKBshortContent = article.summary;
                 if (zd_tt_editerInnerConent == "" || zd_tt_editerInnerConent == "<div><br></div>") {
-                    obj.components["0"].content = ArticlesObject[i].summary;
-                    injectTheIframeValue.contentDocument.body.innerHTML = "<div>" + ArticlesObject[i].summary + "</div>";
+                    obj.components["0"].content = article.summary;
+                    injectTheIframeValue.contentDocument.body.innerHTML = "<div>" + article.summary + "</div>";
                 }
             }
         } else {
@@ -634,11 +636,13 @@ function postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInne
                     id: "editorBody",
                     buttons: [{
                         id: "zd_tt_permissionErrors",
-                        content: "ok"
+                        content: "ok",
+                        callbackList: {
+                            mousedown: closeEPwithcloseExtension
+                        }
                     }],
-                    content: "<b>You have no permission to configure this portal.</b> sorry contact your PORTAL admin."
+                    content: "<b>You have no permission to configure this portal.</b> Please contact your PORTAL admin."
                 });
-                document.addEventListener("mousedown", errorPopupCallbackFunction, true);
             }
         }
     })
@@ -657,16 +661,16 @@ function zdttArticleSelectorBinder(id) {
         for (article of ArticlesObject) {
             if (id == article.id) {
                 zdttContainers.searchInp.value = article.title;
-                postContentIntotheEditor(i, obj, injectTheIframeValue, zd_tt_editerInnerConent)
-                hide("searchDisplay");
+                postContentIntotheEditor(article, obj, injectTheIframeValue, zd_tt_editerInnerConent)
+                zdtt_popupHide(zdttContainers.searchRes);
                 zd_tt_articleSelected = true;
                 zd_tt_selectedArticleTitle = article.title;
                 zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zd_tt_artInpError").innerText = "";
                 zdttContainers.searchInp.parentElement.className = zdttContainers.searchInp.parentElement.className.split(" zd_tt_notfilledErrorStyle").join('');
-                // window.postMessage({
-                //     name: "SingleArticle",
-                //     article: e.target.id
-                // }, "*");
+                window.postMessage({
+                    name: "SingleArticle",
+                    article: e.target.id
+                }, "*");
             }
         }
     }
@@ -691,7 +695,7 @@ window.addEventListener("message", function(event) {
         getConfiguredMessages(filter,lastLoadingElem);
     }
     else if (event.data.name == "articleSearchResult") {
-        var ArticlesObject = event.data.value;
+        ArticlesObject = event.data.value;
         var parentDiv = zdttContainers.searchRes.querySelector("#zohodesk_Tooltip_dropdown_articles_parent_id1");
         parentDiv.innerHTML = "";
 
@@ -714,7 +718,7 @@ window.addEventListener("message", function(event) {
                         id:article.id
                     },
                     elementData:{
-                        child:document.createTextNode(article.title)
+                        child:[document.createTextNode(article.title)]
                     },
                     callbackList:[{click:zdttArticleSelectorBinder(article.id)}],
                     parent:container
@@ -726,11 +730,26 @@ window.addEventListener("message", function(event) {
             //     element.parentElement.removeChild(element);
             // }
             // document.getElementById("searchDisplay").appendChild(parentDiv);
-            show("searchDisplay");
+            // show("searchDisplay");
+            zdtt_popupShow(zdttContainers.searchRes)()
 
             // document.getElementById("zohodesk_Tooltip_dropdown_articles_parent_id1").onclick = function(e) {
             //     Chrome_Extension_Get_Select_Article(e);
             // }
+        }
+    }
+    else if (event.data.name == "SingleArticleObject") {
+        var element;
+        if (zdtt_nowStatus == "new") {
+            zd_tt_addTooltipObj.components[0].solutionId = event.data.value.id;
+            if (zd_tt_addTooltipObj.preferences["selector"] != undefined) {
+                delete zd_tt_addTooltipObj.preferences["selector"];
+            }
+        } else if (zdtt_nowStatus == "update") {
+            ConfigureObjectForEdit.components[0].solutionId = event.data.value.id;
+            if (ConfigureObjectForEdit.preferences["selector"] != undefined) {
+                delete ConfigureObjectForEdit.preferences["selector"];
+            }
         }
     }
 })
@@ -972,6 +991,7 @@ function manualBackgroundColorSetter(e) {
             }
             if (LastFocusedBC != latestBGC) {
                 LastFocusedBC = undefined;
+                finalizedColor = bc;
                 lastSelectedColorOptionNode.style.borderColor = "";
             }
         } catch (error) {
@@ -997,6 +1017,7 @@ function separateColorHighliter(e) {
     var childEle = e.target;
     var parentEle = childEle.parentNode;
     var bc = zdttEditorBGColorFinder(childEle);
+    finalizedColor = bc;
     if(bc=="rgb(255, 255, 255)"){
         parentEle.style.borderColor="rgba(0, 0, 0, 0.1)";
     }
@@ -1012,3 +1033,259 @@ function separateColorHighliter(e) {
     LastFocusedBC = bc;
     lastSelectedColorOptionNode = parentEle;
 }
+
+/* element select function revamp */
+
+function removeSelectedTriggerPoint(path) {
+    return function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.elementsArrayCreater({
+            "type": "remove",
+            "elemSelector": path
+        })
+    }
+}
+
+function findInnerElements(parentEleId, checkEle) {
+    try {
+        var innerElement = false
+        var parentEle = document.getElementById(parentEleId);
+        if (parentEle == checkEle) {
+            innerElement = true;
+        }
+        var parentEleChild = parentEle.getElementsByTagName("*")
+        var parentEleChildLen = parentEleChild.length
+        for (i = 0; i < parentEleChildLen; i++) {
+            if (checkEle == parentEleChild[i]) {
+                innerElement = true
+                break
+            }
+        }
+        return innerElement
+    } catch (err) {}
+}
+
+function zd_tt_elementSelector(obj) {
+    this.selectedStatus = false;
+    this.elementsArrayCreater = obj.elementsArrayCreater;
+    this.prvsElems = undefined;
+    this.Editor = this.Editor.bind(this);
+    this.mouseover = this.mouseover.bind(this);
+    this.mousedown = this.mousedown.bind(this);
+    this.mouseupEvent = this.mouseupEvent.bind(this);
+    this.click = this.click.bind(this);
+    this.dblclick = this.dblclick.bind(this);
+};
+
+zd_tt_elementSelector.prototype.Editor = function(e) {
+    if (mouseOverDone == true) {
+        if (e.target.className.indexOf(" zohodesk-Tooltip-Configureborder") == -1) {
+            if (zd_tt_arrayOfElements.length <= 5) {
+                var TName = undefined;
+                var addTPInput = document.getElementById("zd_tt_changePointer");
+                var elemPath = fullPath(e.target);
+                this.elementsArrayCreater({
+                    "type": "add",
+                    "elemSelector": elemPath
+                });
+                e.target.className = e.target.className.split(" zohodesk-Tooltip-currentShad").join(" zohodesk-Tooltip-Configureborder");
+                var delCallBack = removeSelectedTriggerPoint(elemPath);
+                var deleteIcon = domElement.create({
+                    elemName: "svg",
+                    attributes: {
+                        class:"zohodesk-Tooltip-deleteIcn"
+                    },
+                    elementData:{
+                        innerHTML : `<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#delete"></use>`
+                    }
+                })
+                deleteIcon.style.display = "block";
+                var dele = domElement.create({
+                    elemName: "span",
+                    attributes: {
+                        class: "zohodesk-Tooltip-deleteIcn-cont"
+                    },
+                    elementData: {
+                        child: [deleteIcon]
+                    },
+                    callbackList:[{click:delCallBack.bind(this)}]
+                });
+
+                if (zdttContainers.triggerNameInp.value.trim() != "") {
+                    TName = zdttContainers.triggerNameInp.value;
+                } else {
+                    TName = "trigger name";
+                }
+                var triggerNameSpan = domElement.create({
+                    elemName: "span",
+                    attributes: {
+                        class: "zohodesk-Tooltip-ConfigureCnt-addNew",
+                        id: "zd_tt_triggerNameSpan"
+                    },
+                    elementData: {
+                        innerHTML: "<span class='zdatt_triggerNames'>" + TName + "</span>",
+                        child:[dele]
+                    }
+                });
+                // var triggerNameSpan = document.createElement("span");
+                // triggerNameSpan.className = "zohodesk-Tooltip-ConfigureCnt-addNew";
+                // triggerNameSpan.id = "zd_tt_triggerNameSpan";
+                // triggerNameSpan.innerHTML = "<span class='zdatt_triggerNames'>" + TName + "</span>";
+                // var dele = document.createElement("span");
+                // dele.className = "zohodesk-Tooltip-deleteIcn-cont";
+                // dele.innerHTML = `<svg style="display: block;" class="zohodesk-Tooltip-deleteIcn"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#delete"></use></svg>`;
+                // dele.onclick = function(e) {
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //     var parent = zdtt_getParentElementFC(e.target);
+                //     var path = fullPath(parent);
+                //     this.elementsArrayCreater({
+                //         "type": "remove",
+                //         "elemSelector": path
+                //     });
+                // }.bind(this);
+                // triggerNameSpan.appendChild(dele);
+                e.target.prepend(triggerNameSpan);
+                this.selectedStatus = true;
+                zdttAddTrigerPointer().bind();
+                // let cancelBtn = document.getElementById("zdTT_changeTriggerCancel");
+                // if (cancelBtn.className.indexOf("zohodesk-Tooltip-hide") == -1) {
+                //     cancelBtn.className += " zohodesk-Tooltip-hide";
+                // }
+                // if (addTPInput.className.indexOf("zohodesk-Tooltip-panel-form-field-notallowed") != -1) {
+                //     addTPInput.className = addTPInput.className.split(" zohodesk-Tooltip-panel-form-field-notallowed").join("");
+                // }
+                // addTPInput.addEventListener("click", zd_tt_addTrggerPoint, true);
+                let successMsg = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector("#zdtt_triggerSelectedMsg");
+                successMsg.className = successMsg.className.split(" zohodesk-Tooltip-hide").join("");
+                setTimeout(function() {
+                    if (successMsg.className.indexOf("zohodesk-Tooltip-hide") == -1) {
+                        successMsg.className += " zohodesk-Tooltip-hide";
+                    }
+                }, 2800);
+                ArrayUndoElementList = [];
+                blurPosition();
+                if (zd_tt_arrayOfElements.length == 5) {
+                    zdttAddTrigerPointer().unbind("limitReached");
+                    // if (addTPInput.className.indexOf("zohodesk-Tooltip-panel-form-field-notallowed") == -1) {
+                    //     addTPInput.className += " zohodesk-Tooltip-panel-form-field-notallowed";
+                    // }
+                    // addTPInput.removeEventListener("click", zd_tt_addTrggerPoint, true);
+                    zd_tt_addTPBlocked = true;
+                }
+            } else {
+                zdttAddTrigerPointer().unbind("limitReached");
+                // if (addTPInput.className.indexOf("zohodesk-Tooltip-panel-form-field-notallowed") == -1) {
+                //     addTPInput.className += " zohodesk-Tooltip-panel-form-field-notallowed";
+                // }
+                // addTPInput.removeEventListener("click", zd_tt_addTrggerPoint);
+                zd_tt_addTPBlocked = true;
+            }
+        }
+    }
+}
+
+
+zd_tt_elementSelector.prototype.mouseover = function(e) {
+    if (e.target.localName != "use" && e.target.localName != "svg") {
+        var nameSpan = findInnerElements('zd_tt_triggerNameSpan', e.target);
+        var ElementListener = findInnerElements("zdtt_sidePanelHost", e.target);
+        var TooltipListener = findInnerElements("Chrome_Extension_showContentId", e.target);
+        var insertOption = findInnerElements('ze_link', e.target);
+        var inserplurOption = findInnerElements('KB_Editor_Overlay', e.target);
+        if (ElementListener != true && TooltipListener != true && insertOption != true && inserplurOption != true && nameSpan != true) {
+            if (this.prvsElems != undefined && this.prvsElems != null) {
+                this.prvsElems.className = this.prvsElems.className.split(" zohodesk-Tooltip-currentShad").join("");
+            }
+            if (e.target != document) {
+                this.prvsElems = e.target;
+            }
+            if (this.prvsElems) {
+                if (this.prvsElems.className.indexOf("configureElementsClass") == -1) {
+                    this.prvsElems.className += " zohodesk-Tooltip-currentShad";
+                }
+            }
+        }
+    }
+};
+
+zd_tt_elementSelector.prototype.mousedown = function(e) {
+    var ElementListener = findInnerElements("zdtt_sidePanelHost", e.target);
+    var TooltipListener = findInnerElements("Chrome_Extension_showContentId", e.target);
+    var insertOption = findInnerElements('ze_link', e.target);
+    var inserplurOption = findInnerElements('KB_Editor_Overlay', e.target);
+    var nameSpan = findInnerElements('zd_tt_triggerNameSpan', e.target);
+    if (ElementListener != true && TooltipListener != true && insertOption != true && inserplurOption != true && nameSpan != true) {
+        this.Editor(e);
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
+    }
+};
+
+zd_tt_elementSelector.prototype.mouseupEvent = function(e) {
+    var nameSpan = findInnerElements('zd_tt_triggerNameSpan', e.target);
+    var ElementListener = findInnerElements("zdtt_sidePanelHost", e.target);
+    var insertOption = findInnerElements('ze_link', e.target);
+    var inserplurOption = findInnerElements('KB_Editor_Overlay', e.target);
+    if (ElementListener != true && insertOption != true && inserplurOption != true && nameSpan != true) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
+    }
+};
+
+zd_tt_elementSelector.prototype.click = function(e) {
+    var nameSpan = findInnerElements('zd_tt_triggerNameSpan', e.target);
+    var ElementListener = findInnerElements("zdtt_sidePanelHost", e.target);
+    var TooltipListener = findInnerElements("Chrome_Extension_showContentId", e.target);
+    var insertOption = findInnerElements('ze_link', e.target);
+    var inserplurOption = findInnerElements('KB_Editor_Overlay', e.target);
+    if (this.selectedStatus) {
+        zdtt_elementSelectorObj.detachClickListener();
+        this.selectedStatus = false;
+    }
+    if (ElementListener != true && TooltipListener != true && insertOption != true && inserplurOption != true && nameSpan != true) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
+    }
+};
+
+zd_tt_elementSelector.prototype.dblclick = function(e) {
+    document.removeEventListener('click', this.click, true);
+    e.target.click();
+    document.addEventListener('click', this.click, true);
+};
+
+zd_tt_elementSelector.prototype.attachListeners = function() {
+    document.addEventListener("mouseover", this.mouseover, true);
+    document.addEventListener("mousedown", this.mousedown, true);
+    document.addEventListener("mouseup", this.mouseupEvent, true);
+    document.addEventListener("click", this.click, true);
+    document.addEventListener("dblclick", this.dblclick, true);
+};
+
+zd_tt_elementSelector.prototype.detachClickListener = function() {
+    document.removeEventListener("mouseover", this.mouseover, true);
+    document.removeEventListener("mousedown", this.mousedown, true);
+    document.removeEventListener("mouseup", this.mouseupEvent, true);
+    document.removeEventListener("click", this.click, true);
+    document.removeEventListener("dblclick", this.dblclick, true);
+};
+
+
+function zdtt_getParentElementFC(e) {
+    if (e.localName != "use" && e.localName != "svg") {
+        if (e.className.indexOf("zohodesk-Tooltip-Configureborder") != -1) {
+            return e;
+        } else {
+            return zdtt_getParentElementFC(e.parentElement);
+        }
+    } else {
+        return zdtt_getParentElementFC(e.parentElement);
+    }
+}
+
+/* element select function revamp end */
