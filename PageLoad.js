@@ -1,4 +1,4 @@
-var url = "https://cdn.rawgit.com/LevinsDurai/zdtt/31e8c931/intermediater.js";
+var url = "https://cdn.rawgit.com/LevinsDurai/zdtt/5c412371/intermediater.js";
 var script = document.createElement("script");
 script.type = "text/javascript";
 script.src = url ;

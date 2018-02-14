@@ -222,15 +222,8 @@ function Chrome_Extension_popupdesign(editPUobj) {
         Chrome_Extension_ttdesign.setAttribute("id", "Chrome_Extension_showContentId");
         Chrome_Extension_ttdesign.setAttribute("class", "zohodesk-Tooltip-showContentClass zohodesk-Tooltip-tooltip-hide");
         document.body.appendChild(Chrome_Extension_ttdesign);
-        document.getElementById("Chrome_Extension_showContentId").innerHTML = `<div style="height: 0; width: 0; position: absolute; visibility: hidden">
-        < svg xmlns = "http://www.w3.org/2000/svg" >
-                <symbol id="Tooltip-close" viewBox="0 0 32 32">
-        <path d="M16,0.4C7.4,0.4,0.4,7.4,0.4,16s7,15.6,15.6,15.6s15.6-7,15.6-15.6S24.6,0.4,16,0.4C16,0.4,16,0.4,16,0.4z M21.9,21.9
-            c-0.6,0.6-1.6,0.6-2.3,0L16,18.4L12.4,22c-0.6,0.6-1.6,0.6-2.3,0s-0.6-1.6,0-2.3l3.7-3.7l-3.5-3.5c-0.6-0.6-0.6-1.6,0-2.3
-            s1.6-0.6,2.3,0l3.5,3.5l3.3-3.3c0.6-0.6,1.6-0.6,2.3,0s0.6,1.6,0,2.3l-3.3,3.3l3.6,3.6C22.5,20.3,22.5,21.3,21.9,21.9L21.9,21.9z"/>
-        </symbol>
-            </svg>
-        </div><div class='zohodesk-Tooltip-popup-header' id="zdtt_popupIconParent"><span class='zohodesk-Tooltip-close'><svg class="zohodesk-tooltip-svg-icon icon zohodesk-tooltip-cl-white" id="zohodesk_Tooltip_close_tooltip"  style='color:` + iconMoreOptColor + `'>
+        document.getElementById("Chrome_Extension_showContentId").innerHTML = `<div class='zohodesk-Tooltip-popup-header' id="zdtt_popupIconParent"><span class='zohodesk-Tooltip-close'>
+        <svg class="zohodesk-tooltip-svg-icon icon zohodesk-tooltip-cl-white" id="zohodesk_Tooltip_close_tooltip"  style='color:` + iconMoreOptColor + `'>
                 <use xmlns:xlink="http://www.w3.org/2000/svg" xlink:href="#Tooltip-close"></use>
               </svg></span></div><span class='zohodesk-Tooltip-tooltiparrow'></span><div class='zohodesk-Tooltip-tooltipcontText' id='Chrome_Extension_showContentContainerId'><p class='zohodesk-Tooltip-para' id='Chrome_Extension_showContentContainerSpanId'></p><div id="Chrome_Extension_ToolTip_View_More"></div></div>`;
     } else {

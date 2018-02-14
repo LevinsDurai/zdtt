@@ -112,7 +112,7 @@ function createToolTipErrorPopupBox(obj) {
             class:"zohodesk-Tooltip-error-footer"
         },
         elementData: {
-            child: [zdtt_buttons]
+            child: [...zdtt_buttons]
         }
     })
 
@@ -201,7 +201,7 @@ function createToolTipErrorPopupBox(obj) {
     // var transprentDiv = document.createElement('div');
     // transprentDiv.className = "zohodesk-Tooltip-layer";
     // parent.appendChild(transprentDiv);
-    ZD_ttErrorPopup.BindEven(zdtt_buttons);
+    ZD_ttErrorPopup.BindEven(zdtt_buttons,zdtt_errorBackgroundLayerHost,zdtt_errorPopupHost);
     zdtt_errorBackgroundLayer.style.zIndex = zdtt_pageMaxZIndexValue + 15;
     zdtt_errorPopup.style.zIndex = zdtt_pageMaxZIndexValue + 20; // We are using 'zdtt_errorPopup' instead of the 'divContainer'.
     if (position == "change") {
@@ -287,7 +287,9 @@ ZDesk_tooltipError.prototype.events = function(e) {
 ZDesk_tooltipError.prototype.clearBindedEvent = function() {
     document.removeEventListener('keydown', this.addEvents, true);
 };
-ZDesk_tooltipError.prototype.BindEven = function(btns) {
+ZDesk_tooltipError.prototype.BindEven = function(btns,errorBackgroundLayerHost,errorPopupHost) {
+    this.errorBackgroundLayerHost = errorBackgroundLayerHost;
+    this.errorPopupHost = errorPopupHost;
     this.btns = btns;
     this.addEvents = this.events.bind(this);
     document.addEventListener('keydown', this.addEvents, true);
@@ -297,7 +299,7 @@ ZDesk_tooltipError.prototype.BindEven = function(btns) {
             if (btn.id == "zd_tt_permissionErrors") {
                 this.disable = true;
             }
-            btn.addEventListener('mouseup', function(e) {
+            btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 this.clearBindedEvent();
@@ -320,8 +322,8 @@ ZDesk_tooltipError.prototype.BindEven = function(btns) {
     }
 };
 ZDesk_tooltipError.prototype.deleteTooltipErrorPopupBox = function() {
-    var transprentDiv = document.getElementById("zdtt_errorBLPHost");
-    var errorPopup = document.getElementById("zdtt_errorPopupHost");
+    var transprentDiv = this.errorBackgroundLayerHost;
+    var errorPopup = this.errorPopupHost;
     if(transprentDiv){
         transprentDiv.parentElement.removeChild(transprentDiv);
     }
@@ -336,6 +338,8 @@ ZDesk_tooltipError.prototype.deleteTooltipErrorPopupBox = function() {
     //     parent.removeChild(document.getElementsByClassName('zohodesk-Tooltip-error-message')[0]);
     // }
     ZDTT_firstTimeFocused = true;
+    this.errorPopupHost = undefined;
+    this.errorBackgroundLayerHost = undefined;
 };
 
 var ZD_ttErrorPopup = new ZDesk_tooltipError();

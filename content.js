@@ -1,4 +1,6 @@
 var zdttTriggerOldFocused = undefined;
+var CloseIconMouseOverAction;
+var zdtt_lastHighlightedObj = undefined;
 var ArticlesObject = undefined;
 var LastFocusedBC = undefined;
 var lastSelectedColorOptionNode = undefined;
@@ -337,6 +339,7 @@ function ZohoDesk_tooltip_triggerList_creator(obj) {
             })
             li.onclick=zdttHighlightTriggerElems(li);
             deleteIcon.onclick = zdttDeleteTrigger(li);
+            editIcon.onclick = zdUpdateTrigger(currentObj);
 
             // div = document.createElement('div');
             // div.className = ;
@@ -399,6 +402,28 @@ function zdttDeleteTrigger(elem){
     }
 }
 
+function zdUpdateTrigger(currentObj){
+    return function(){
+        var focusedTriggerObj;
+        var ind = 0;
+        for(var obj of listOfTriggersObj){
+            if(obj.id == currentObj.id){
+                focusedTriggerObj = obj;
+                zd_tt_focusedElementInd = ind;
+            }
+            ind++
+        }
+        if (focusedTriggerObj != undefined) {
+            lastObjectOfUpdatedTriggerFUB = JSON.parse(JSON.stringify(focusedTriggerObj));
+            ConfigureObjectForEdit = JSON.parse(JSON.stringify(focusedTriggerObj));
+            zd_tt_addNewTrigger("update");
+            updateTabClicked(ConfigureObjectForEdit.name);
+            // zd_tt_triggerUpdate(focusedTriggerObj);
+        }
+        
+    }
+}
+
 function listFilterCreater() {
     var filterOptText = (zd_tt_triggerListing == "CREATED_BY_ME") ? "Created By Me" : "All";
     zdttContainers.filterSwitch = domElement.create({
@@ -452,7 +477,7 @@ function listFilterCreater() {
         parent: popup.querySelector(".zohodesk-Tooltip-list")
     })
     var popupCallback = zdtt_popupShow(popup);
-    zdttContainers.filterSwitch.onmouseup = popupCallback;
+    zdttContainers.filterSwitch.onclick = popupCallback;
 }
 
 function zd_tt_triggerListInitiater(obj, loading) {
@@ -465,7 +490,9 @@ function zd_tt_triggerListInitiater(obj, loading) {
         // div.className = "zohodesk-Tooltip-panel-content zohodesk-Tooltip-trigger-content";
         // div.id = "zd_tt_listParent";
         // div.appendChild(triggerLists);
-        loading.remove();
+        if(loading){
+            loading.remove();
+        }
         // zd_tt_loadinigContainerRemove();
         zdttContainers.zdtt_sidepanelSwitchingComp.innerHTML = `<div class="zohodesk-Tooltip-TriggersTitle zohodesk-Tooltip-cl-both" id="zig">
             <div class="zohodesk-Tooltip-TriggersTitlelft">
@@ -601,9 +628,7 @@ function getConfiguredMessages(filter,loading) {
                 buttons: [{
                     id: "zd_tt_permissionErrors",
                     content: "ok",
-                    callbackList: {
-                        mousedown: closeEPwithcloseExtension
-                    }
+                    callbackList: [{mousedown: closeEPwithcloseExtension}]
                 }],
                 content: "<b>unable to reach the server.</b> Please try again some time later."
             });
@@ -637,9 +662,7 @@ function postContentIntotheEditor(article, obj, injectTheIframeValue, zd_tt_edit
                     buttons: [{
                         id: "zd_tt_permissionErrors",
                         content: "ok",
-                        callbackList: {
-                            mousedown: closeEPwithcloseExtension
-                        }
+                        callbackList: [{mousedown: closeEPwithcloseExtension}]
                     }],
                     content: "<b>You have no permission to configure this portal.</b> Please contact your PORTAL admin."
                 });
@@ -754,6 +777,22 @@ window.addEventListener("message", function(event) {
     }
 })
 
+function ZT_HexColorValue() {};
+ZT_HexColorValue.prototype.rgbToHex = function(r, g, b) {
+    return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
+};
+ZT_HexColorValue.prototype.componentToHex = function(c) {
+    this.hex = c.toString(16);
+    return this.hex.length == 1 ? "0" + this.hex : this.hex;
+}
+ZT_HexColorValue.prototype.RGBAtoRGB = function(r, g, b, a, r2, g2, b2) {
+    var r3 = Math.round(((1 - a) * r2) + (a * r))
+    var g3 = Math.round(((1 - a) * g2) + (a * g))
+    var b3 = Math.round(((1 - a) * b2) + (a * b))
+    return "rgb(" + r3 + "," + g3 + "," + b3 + ")";
+}
+
+var zd_colorValueChanger = new ZT_HexColorValue();
 
 // While publish, need to remove all console.log statememts.
 
@@ -769,6 +808,32 @@ function Chrome_Extension_ExecuteEditor() {
     });
 }
 
+function zd_tt_removeMouseOverElements() {
+    zdtt_lastHighlighted = [];
+    var elems = document.getElementsByClassName("zohodesk-Tooltip-currentShad");
+    var child = undefined;
+    if (elems.length) {
+        for (var i = 0; i < elems.length; i++) {
+            elems[i].className = elems[i].className.split("zohodesk-Tooltip-currentShad").join('');
+        }
+        prvsElems = undefined;
+    }
+    elems = document.getElementsByClassName("zohodesk-Tooltip-Configureborder");
+    var len = elems.length;
+    if (elems.length != 0) {
+        for (var i = 0; i < len; i++) {
+            var temp = elems[0];
+            child = temp.querySelector("#zd_tt_triggerNameSpan");
+            temp.className = temp.className.split("zohodesk-Tooltip-Configureborder").join('');
+            if (child != undefined) {
+                child.parentElement.removeChild(child);
+            }
+            child = undefined;
+        }
+    }
+}
+
+
 function Chrome_Extension_AddExtension(AsapId, organitationID, AsapName, domainName) {
     requestAPI(" https://" + commomDomainNameForAPI + "/api/web/extensions?isEnabled=true&orgId=" + organitationID + "&extensionName=" + encodeURIComponent(AsapName) + "&domain=" + encodeURIComponent(domainName) + "&asapId=" + AsapId).post().then((res) => {
         if (res.responseStatus === 200) {
@@ -781,9 +846,7 @@ function Chrome_Extension_AddExtension(AsapId, organitationID, AsapName, domainN
                     buttons: [{
                         id: "zd_tt_permissionErrors",
                         content: "ok",
-                        callbackList: {
-                            mousedown: closeEPwithcloseExtension
-                        }
+                        callbackList: [{mousedown: closeEPwithcloseExtension}]
                     }],
                     content: "<b>You dont have a admin permission for this portal.</b> sorry Permission is denited."
                 });
@@ -793,9 +856,7 @@ function Chrome_Extension_AddExtension(AsapId, organitationID, AsapName, domainN
                 buttons: [{
                     id: "zd_tt_permissionErrors",
                     content: "ok",
-                    callbackList: {
-                        mousedown: closeEPwithcloseExtension
-                    }
+                    callbackList: [{mousedown: closeEPwithcloseExtension}]
                 }],
                 content: "<b>unable to reach the server.</b> Please try again some time later."
             });
@@ -820,9 +881,7 @@ function Chrome_Extension_GetExtension(AsapId, organitationID) {
                 buttons: [{
                     id: "zd_tt_permissionErrors",
                     content: "ok",
-                    callbackList: {
-                        mousedown: closeEPwithcloseExtension
-                    }
+                    callbackList: [{mousedown: closeEPwithcloseExtension}]
                 }],
                 content: "<b>unable to reach the server.</b> Please try again some time later."
             });
@@ -852,9 +911,7 @@ function portalAPI(IAMAGENTTICKET) {
                                     buttons: [{
                                         id: "zd_tt_permissionErrors",
                                         content: "ok",
-                                        callbackList: {
-                                            mousedown: closeEPwithcloseExtension
-                                        }
+                                        callbackList: [{mousedown: closeEPwithcloseExtension}]
                                     }],
                                     content: "<b>You have no permission to configure this portal.</b> Please contact your PORTAL admin."
                                 });
@@ -869,9 +926,7 @@ function portalAPI(IAMAGENTTICKET) {
                         buttons: [{
                             id: "zd_tt_permissionErrors",
                             content: "ok",
-                            callbackList: {
-                                mousedown: closeEPwithcloseExtension
-                            }
+                            callbackList: [{mousedown: closeEPwithcloseExtension}]
                         }],
                         content: "<b>You are not in the portal .</b> sorry Permission is denited."
                     });
@@ -880,9 +935,7 @@ function portalAPI(IAMAGENTTICKET) {
                         buttons: [{
                             id: "zd_tt_permissionErrors",
                             content: "ok",
-                            callbackList: {
-                                mousedown: closeEPwithcloseExtension
-                            }
+                            callbackList: [{mousedown: closeEPwithcloseExtension}]
                         }],
                         content: "<b>unable to reach the server.</b> sorry try again some time later."
                     });
@@ -891,9 +944,7 @@ function portalAPI(IAMAGENTTICKET) {
                         buttons: [{
                             id: "zd_tt_permissionErrors",
                             content: "ok",
-                            callbackList: {
-                                mousedown: closeEPwithcloseExtension
-                            }
+                            callbackList: [{mousedown: closeEPwithcloseExtension}]
                         }],
                         content: "<b>You are not in the portal .</b> sorry Permission is denited."
                     });
@@ -991,7 +1042,7 @@ function manualBackgroundColorSetter(e) {
             }
             if (LastFocusedBC != latestBGC) {
                 LastFocusedBC = undefined;
-                finalizedColor = bc;
+                finalizedColor = zdttEditorBGColorFinder(zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".KB_Editor_iframe").contentDocument.body);
                 lastSelectedColorOptionNode.style.borderColor = "";
             }
         } catch (error) {
@@ -1289,3 +1340,33 @@ function zdtt_getParentElementFC(e) {
 }
 
 /* element select function revamp end */
+
+
+function withoutSidepanelEditOpt(obj, ind) {
+    var sidePanelElem = document.getElementById("editorBody");
+    var obj = obj;
+    var ind = ind;
+    return function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        zd_tt_removeMouseOverElements();
+        if (zdtt_lastHighlightedObj != undefined) {
+            delete zdtt_lastHighlightedObj["dontEdit"];
+        }
+        zdtt_lastHighlightedObj = obj;
+        zdtt_lastHighlightedObj["dontEdit"] = true;
+        zd_TT_sidePanelViewed = true;
+        if (sidePanelElem.className.indexOf("zohodesk-Tooltip-hide") != -1) {
+            sidePanelElem.className = sidePanelElem.className.split(" zohodesk-Tooltip-hide").join("");
+        }
+        var maximizeIcon = document.getElementById("maxiIcon");
+        if (maximizeIcon) {
+            maximizeIcon.parentElement.removeChild(maximizeIcon);
+        }
+        lastObjectOfUpdatedTriggerFUB = JSON.parse(JSON.stringify(obj));
+        ConfigureObjectForEdit = JSON.parse(JSON.stringify(obj));
+        zd_tt_focusedElementInd = ind;
+        zd_tt_triggerUpdate(obj);
+        zdATTupdatedElemetsHighlighter(obj);
+    }
+}
