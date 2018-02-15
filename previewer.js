@@ -246,7 +246,7 @@ function Chrome_Extension_popupdesign(editPUobj) {
                 e.preventDefault();
                 e.stopPropagation()
             };
-            // editIcon.onclick = withoutSidepanelEditOpt(editPUobj.object, editPUobj.ind);
+            editIcon.onclick = withoutSidepanelEditOpt(editPUobj.object);
             document.getElementById("zdtt_popupIconParent").prepend(editIcon);
         }
     }

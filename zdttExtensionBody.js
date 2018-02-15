@@ -1164,6 +1164,10 @@ function zdttFormElementCreater(type,callback) {
     }
     else if (zdtt_nowStatus == "update") {
         var obj = ConfigureObjectForEdit;
+        if(typeof(obj.preferences)=="string"){
+    		obj.preferences = JSON.parse(obj.preferences);
+    	}
+    	finalizedColor = obj.preferences.bgColor;
         zdtt_saveBtnTxt = "Update";
         obj.triggers.forEach(function(elem) {
 	        zd_tt_arrayOfElements.push(elem.element);
@@ -1459,7 +1463,12 @@ function zdttFormElementCreater(type,callback) {
         callbackList:[{click:function(){listTabClicked()}}],
         parent:zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".zohodesk-Tooltip-panel-footer")
     });
-
+    setTimeout(function() {
+        let editorPlace = zdttContainers.zdtt_sidepanelSwitchingComp.querySelector(".KB_Editor_iframe");
+        if(editorPlace!=undefined){
+            editorPlace.contentDocument.body.style.backgroundColor = obj.preferences.bgColor;
+        }
+    }, 200);
 
 }
 
@@ -1744,6 +1753,7 @@ function zdttCommonHeaderCreater(){
         elementData: {
             innerHTML: `<svg class="zohodesk-tooltip-svg-icon-medium"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#Tooltip-close"></use></svg>`
         },
+        callbackList:[{click:minimiseZDTTsidePanel}],
         parent : closeIconParent
     });
 
@@ -1825,18 +1835,144 @@ function zdttHighlighterRemover(obj) {
 
 function emptyListPageCreater(){
     if (listOfTriggersObj.length == 0) {
-
-    	var emptyPage = domElement.create({
-	        elemName: "div",
+    	var slide1 = domElement.create({
+	        elemName: "li",
 	        attributes: {
-	            class: "loading-area empty-trigger-content"
+	            class: "zohodesk-Tooltip-slidenext zdt-activeTrigList"
 	        },
 	        elementData: {
-	            innerHTML: `<svg class="emptytrigger"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#emptytrigger"></use></svg><div class="empty-message">No Triggers Has Been Added Yet</div><div class="zohodesk-Tooltip-txtcntr" id="zd_tt_empty_buttonParent"></div>`
+	            innerHTML: `<div class="posrel">
+					<div class="zohodesk-Tooltip-notrigsvg">
+						<svg>
+							<use xlink:href="#slide_1"></use>
+						</svg>
+		            </div>
+					<div class="zdtgray2 zdtfw500 zdtmt24">Reuse your Articles</div>
+					<div class="zdtgray1 zdtpdng40 zdtmt24">By creating trigger points you can reuse your articles from knowledged base by single click to the users</div>
+				</div>`
 	        }
 	    });
+	    var slide2 = domElement.create({
+	        elemName: "li",
+	        attributes: {
+	            class: "zohodesk-Tooltip-slidenext zdt-activeTrigList"
+	        },
+	        elementData: {
+	            innerHTML: `<div class="posrel">
+					<div class="zohodesk-Tooltip-notrigsvg">
+						<svg>
+							<use xlink:href="#slide_2"></use>
+						</svg>
+		            </div>
+					<div class="zdtgray2 zdtfw500 zdtmt24">Create complete walkthrough</div>
+					<div class="zdtgray1 zdtpdng40 zdtmt24">Adding 2 or more trigger points can help to create walkthrough about your product or page to customers</div>
+				</div>`
+	        }
+	    });
+	    var ul = domElement.create({
+	    	elemName:"ul",
+	    	elementData:{
+	    		child:[slide1,slide2]
+	    	}
+	    });
+
+	    var empParentFirstChild = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zohodesk-Tooltip-notrigHead"
+	    	},
+	    	elementData:{
+	    		innerHTML:`<svg class="zdtw30 zdth30 zdtgray2"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#zdtinfo"></use></svg><span class="zdtgray2 zdtfw500 pl10">no trigger points added yet</span>`
+	    	}
+	    });
+
+	    var slideSwitches = [];
+
+	    for(var i = 0 ; i<2 ; i++){
+			slideSwitches.push(domElement.create({
+		    	elemName:"span",
+		    	attributes:{
+		    		class:"zohodesk-Tooltip-dotcircleIn"
+		    	}
+		    }))	    	
+	    }
+	    var slideSwitchParent = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zohodesk-Tooltip-dotcircle"
+	    	},
+	    	elementData:{
+	    		child:slideSwitches
+	    	}
+	    });
+
+	    var addNewBtn = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zdtbtn zdtbtn-success"
+	    	},
+	    	callbackList:[{click:function(){zd_tt_addNewTrigger("new");}}],
+	    	elementData:{
+	    		innerHTML : `Add Trigger`,
+	    	}
+	    });
+
+	    var addNewBtnPrnt = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zdtfnt0 zdtmt41"
+	    	},
+	    	elementData:{
+	    		child:[addNewBtn]
+	    	}
+	    });
+
+	    var slideParent = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zohodesk-Tooltip-slideIn"
+	    	},
+	    	elementData:{
+	    		innerHTML : `<div class="zohodesk-Tooltip-slidemainDiv"><div class="zohodesk-Tooltip-slides" id="zdttEmptySlides"></div></div>`,
+	    		child:[slideSwitchParent,addNewBtnPrnt]
+	    	}
+	    });
+	    slideParent.querySelector("#zdttEmptySlides").appendChild(ul);
+
+	    var empParentLastChild = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zohodesk-Tooltip-slidemain"
+	    	},
+	    	elementData:{
+	    		child:[slideParent]
+	    	}
+	    });
+
+	    var empParent = domElement.create({
+	    	elemName:"div",
+	    	attributes:{
+	    		class:"zdttxtAlgnCntr zohodesk-Tooltip-notrigsvg"
+	    	},
+	    	elementData:{
+	    		child:[empParentFirstChild,empParentLastChild]
+	    	}
+	    });
+
+	    /*  ########################  */ 
+
+    	// var emptyPage = domElement.create({
+	    //     elemName: "div",
+	    //     attributes: {
+	    //         class: "loading-area empty-trigger-content"
+	    //     },
+	    //     elementData: {
+	    //         innerHTML: `<svg class="emptytrigger"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#emptytrigger"></use></svg><div class="empty-message">No Triggers Has Been Added Yet</div><div class="zohodesk-Tooltip-txtcntr" id="zd_tt_empty_buttonParent"></div>`
+	    //     }
+	    // });
 	    if(lastLoadingElem){
 	    	lastLoadingElem.remove();
+	    	lastLoadingElem = undefined;
 	    }
 	    if(!TriggerListAllObjMaintanense.length){
 	    	if(zdttContainers.headerTabsParent){
@@ -1844,29 +1980,24 @@ function emptyListPageCreater(){
 	    		delete zdttContainers.headerTabsParent;
 	    		zdttContainers.zdtt_sidepanelSwitchingComp.className += " zohodesk-Tooltip-height";
 	    		zdttContainers.zdtt_sidepanelSwitchingComp.innerHTML = "";
-	    		zdttContainers.zdtt_sidepanelSwitchingComp.appendChild(emptyPage);
 	    	}
+	    	zdttContainers.zdtt_sidepanelSwitchingComp.appendChild(empParent);
 	    }
         else {
             zdttContainers.ListParent.innerHTML = "";
-            zdttContainers.ListParent.appendChild(emptyPage);
+            zdttContainers.ListParent.appendChild(empParent);
         }
-        var addNewBtn = domElement.create({       // add callback on click to button;
-	        elemName: "button",
-	        attributes: {
-	            class: "zohodesk-Tooltip-form-button"
-	        },
-	        elementData: {
-	            innerHTML: `+ Add New`
-	        },
-	        parent:emptyPage.querySelector("#zd_tt_empty_buttonParent")
-	    });
-
-        // addNewBtn.addEventListener("click", function(e) {
-        //     zd_tt_addNewTrigger("new");
-        //     zdtt_nowStatus = "new"
-        // });
-
+     //    var addNewBtn = domElement.create({       // add callback on click to button;
+	    //     elemName: "button",
+	    //     attributes: {
+	    //         class: "zohodesk-Tooltip-form-button"
+	    //     },
+	    //     elementData: {
+	    //         innerHTML: `+ Add New`
+	    //     },
+	    //     callbackList:[{click:function(){zd_tt_addNewTrigger("new");}}],
+	    //     parent:emptyPage.querySelector("#zd_tt_empty_buttonParent")
+	    // });
     }
 }
 
@@ -1938,7 +2069,7 @@ function deleteCallBackCreater(elem, cls) {
             var ind = 0
             for (trigger of listOfTriggersObj) {
                 if (elem.id == trigger.id) {
-                    // zdttElementEventRemover(trigger)
+                    zdttElementEventRemover(trigger);
                     zdttHighlighterRemover(trigger);
                     // zd_tt_ConfSelectedTrigger = undefined;
                     listOfTriggersObj.splice(ind, 1);
@@ -2034,12 +2165,12 @@ function updateTabClicked(name){
 }
 
 function ZDTT_topHeaderTapsCreater() {
-    if (zdttContainers.headerTabsParent == undefined) {
+    if (!zdttContainers.headerTabsParent) {
     	if( !zdttTabs.list && !zdttTabs.update && !zdttTabs.addNew ){
 	    	zdttTabs.list = domElement.create({
 		        elemName: "li",
 		        attributes: {
-		            class: "zohodesk-Tooltip-toggleTap-li zohodesk-Tooltip-fl-lft zohodesk-Tooltip-selectOpts zohodesk-Tooltip-selectedOpts",
+		            class: "zohodesk-Tooltip-toggleTap-li zohodesk-Tooltip-fl-lft zohodesk-Tooltip-selectOpts",
 		            id: "triggerListViewTap"
 		        },
 		        elementData: {
@@ -2069,29 +2200,32 @@ function ZDTT_topHeaderTapsCreater() {
 		        },
 		        callbackList:[{click:addNewTabClicked}]
 		    });
-	    	var ul = domElement.create({
-		        elemName: "ul",
-		        attributes: {
-		            class: "zohodesk-Tooltip-cl-both zohodesk-Tooltip-list",
-		            id: "zdtt-taps-parent"
-		        },
-		        elementData: {
-		            child: [zdttTabs.list,zdttTabs.update,zdttTabs.addNew]
-		        }
-		    });
-
-	    	zdttContainers.headerTabsParent = domElement.create({
-		        elemName: "div",
-		        attributes: {
-		            class: "zohodesk-Tooltip-selectOptsContent",
-		            id: "header-comenContainer"
-		        },
-		        elementData: {
-		            child: [ul]
-		        }
-		    });
-		    zdttContainers.zdtt_sidepanelHeader.appendChild(zdttContainers.headerTabsParent);
     	}
+    	zdttTabs.list.className = zdttTabs.list.className.split(" zohodesk-Tooltip-selectedOpts").join("");
+    	zdttTabs.update.className = zdttTabs.update.className.split(" zohodesk-Tooltip-selectedOpts").join("");
+    	zdttTabs.addNew.className = zdttTabs.addNew.className.split(" zohodesk-Tooltip-selectedOpts").join("");
+    	var ul = domElement.create({
+	        elemName: "ul",
+	        attributes: {
+	            class: "zohodesk-Tooltip-cl-both zohodesk-Tooltip-list",
+	            id: "zdtt-taps-parent"
+	        },
+	        elementData: {
+	            child: [zdttTabs.list,zdttTabs.update,zdttTabs.addNew]
+	        }
+	    });
+
+    	zdttContainers.headerTabsParent = domElement.create({
+	        elemName: "div",
+	        attributes: {
+	            class: "zohodesk-Tooltip-selectOptsContent",
+	            id: "header-comenContainer"
+	        },
+	        elementData: {
+	            child: [ul]
+	        }
+	    });
+	    zdttContainers.zdtt_sidepanelHeader.appendChild(zdttContainers.headerTabsParent);
     	// zdttContainers.zdtt_sidepanelHeader.innerHTML="";
         // var header = document.getElementById('zdtt_headerContainer');
         // var html = `<ul class="zohodesk-Tooltip-cl-both zohodesk-Tooltip-list" id="zdtt-taps-parent">
@@ -2434,7 +2568,16 @@ zdttContainers.zdtt_sidePanel = domElement.create({
     }
 }) 
 
+var zdtt_minimizeIconHost = domElement.create({
+    elemName: "div",
+    attributes: {
+        id: "zdtt_minimizeIconHost"
+    },
+    parent: zdttTempParent
+})
+shadowRootCreater(zdtt_minimizeIconHost, zdtt_Temp.minimizeIcon);
 
+zdtt_minimizeIconHost.shadowRoot.querySelector("#maxiIcon").onclick = maximizeSidePanel;
 
 var zdtt_sidePanelHost = domElement.create({
     elemName: "div",
