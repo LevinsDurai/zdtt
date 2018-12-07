@@ -1060,14 +1060,14 @@ var zdtt_svgPath = `<div style="height: 0; width: 0; position: absolute; visibil
 </div>`;
 
 // var shadowDomScript = document.createElement("script");
-// shadowDomScript.src = "https://cdn.rawgit.com/LevinsDurai/zdtt/8adc0cc7/shadowDomScript.js";
+// shadowDomScript.src = "https://cdn.jsdelivr.net/gh/LevinsDurai/zdtt@8adc0cc7/shadowDomScript.js";
 // shadowDomScript.type = "text/javascript";
 
 
 // var zohodeskInitJs = document.createElement("script");
 // zohodeskInitJs.type = "text/javascript";
 // zohodeskInitJs.className = "desk_support_chromeAddons";
-// zohodeskInitJs.src = "https://cdn.rawgit.com/LevinsDurai/editor/ca5c976b/ZohoDeskEditor_Tooltip_Init.js";
+// zohodeskInitJs.src = "https://cdn.jsdelivr.net/gh/LevinsDurai/editor@ca5c976b/ZohoDeskEditor_Tooltip_Init.js";
 
 // var Kernelscript = document.createElement("script");
 // Kernelscript.type = "text/javascript";
@@ -1078,7 +1078,7 @@ var zdtt_svgPath = `<div style="height: 0; width: 0; position: absolute; visibil
 // zohoDeskEditterCreater.type = "text/javascript";
 // zohoDeskEditterCreater.className = "desk_support_chromeAddons";
 // zohoDeskEditterCreater.defer = true;
-// zohoDeskEditterCreater.src = "https://cdn.rawgit.com/LevinsDurai/editor/master/ZDTT_edit.js";
+// zohoDeskEditterCreater.src = "https://cdn.jsdelivr.net/gh/LevinsDurai/editor/ZDTT_edit.js";
 
 var minimiztIconInnorHTML = `<div id="maxiIcon" class="maximiseIco zohodesk-Tooltip-hide">
     <span class="zohodesk-Tooltip-draggableDiv" id="zdtt_dragDiv">
